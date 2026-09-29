@@ -186,6 +186,44 @@ td.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 .gen .glbl{padding-top:5px}
 .gen .grow:last-of-type{margin-bottom:0}
 .gen .glbl{font-size:12px;font-weight:700}
+.sld{width:100%;max-width:460px}
+.sldrow{display:flex;align-items:flex-start;gap:10px}
+.sldtrack{flex:1;min-width:0;position:relative;padding-bottom:20px}
+.sldtrack input[type=range]{display:block;width:100%;margin:7px 0 0;accent-color:var(--ink);cursor:pointer}
+.sldticks{position:absolute;left:0;right:0;top:26px;height:16px}
+.sldticks button{position:absolute;transform:translateX(-50%);border:none;background:none;padding:0 3px;font:inherit;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);cursor:pointer;line-height:1.3}
+.sldticks button[aria-pressed="true"]{color:var(--ink);font-weight:700}
+.sldticks button:hover:not(:disabled){color:var(--ink);text-decoration:underline}
+.sldnum{width:66px;flex:none;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:4px 8px;font:inherit;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+.sldunit{font-size:12px;color:var(--muted);padding-top:5px;flex:none}
+.sld.off{opacity:.45}
+.gen>.estbox:first-child{margin:0 0 12px}
+.api mark.fill{background:rgba(234,179,8,.26);color:inherit;border-radius:3px;padding:0 2px;box-shadow:inset 0 -1.5px 0 rgba(202,138,4,.85)}
+.skilline{margin:12px 0 0;font-size:12.5px;line-height:1.6}
+.skilline .tokc{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:0 5px;border-radius:4px;background:var(--bg);border:1px solid var(--line)}
+.skilline .tokwhy2{font-size:11.5px;color:var(--muted)}
+.skillcta{margin-top:8px;padding:8px 12px;border:1.5px solid var(--s-fp8);border-radius:8px;background:color-mix(in srgb,var(--s-fp8) 12%,transparent);font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#apiToks:empty+.skillcta{margin-top:0}
+.skillcta a{background:var(--ink);color:var(--btn-ink)!important;text-decoration:none!important;padding:3px 12px;border-radius:999px;font-size:12px}
+.skillcta a:hover{opacity:.85}
+.skilline a{color:var(--ink);font-weight:700;text-decoration:underline;overflow-wrap:anywhere}
+.howmat{margin-top:12px;padding:10px 13px;border:1px solid var(--line);border-left:3px solid var(--c,var(--ink));border-radius:0 8px 8px 0;background:var(--panel);font-size:12.5px;line-height:1.6}
+.howmat .hmhd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px}
+.howmat .hmtag{font-size:10.5px;padding:0 8px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.howmat .hmsub{font-size:11.5px;color:var(--muted)}
+.howmat ol{margin:3px 0 0;padding-left:20px}
+.howmat ol li{margin-top:2px}
+.howmat .hmfiles{display:flex;flex-direction:column;gap:1px;margin:2px 0}
+.howmat .hmfile{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.howmat .bk{font-family:"IBM Plex Mono",monospace;font-size:11.5px;overflow-wrap:anywhere}
+.howmat .hmwho{font-size:11.5px;color:var(--muted)}
+.howmat .hmopt{margin-top:9px}
+.howmat pre{margin:4px 0}
+.howmat .hmfoot{margin-top:8px;padding-top:7px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+.howmat .hmfoot b{color:var(--ink)}
+.apiname{width:100%;max-width:420px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit;font-size:12.5px}
 .modes{display:flex;flex-wrap:wrap;gap:6px}
 .modes button{border:1px solid var(--line);background:var(--panel);color:var(--muted);font:inherit;font-size:12px;padding:6px 12px;border-radius:999px;cursor:pointer;line-height:1.3;transition:all .15s}
 .modes button[aria-pressed="true"]{background:var(--ink);color:var(--btn-ink);border-color:var(--ink);font-weight:700}
@@ -819,7 +857,7 @@ th.l{text-align:left}
         <tbody>
           <tr><td class="l"><code>ref2va</code></td><td class="l">參考角色、場景、聲音；換角</td><td class="l">至少一個 conditions</td><td class="l">30110</td></tr>
           <tr><td class="l"><code>t2va</code></td><td class="l">純文字生成影片與聲音</td><td class="l">不需要</td><td class="l">30120</td></tr>
-          <tr><td class="l"><code>fl2va</code></td><td class="l">首尾幀補間</td><td class="l">首幀，尾幀選填</td><td class="l">30120</td></tr>
+          <tr><td class="l"><code>fl2va</code></td><td class="l">首尾幀補間</td><td class="l">首幀、尾幀擇一或兩者</td><td class="l">30120</td></tr>
         </tbody>
       </table></div>
       <pre># 送任務（立刻回號碼牌；排隊在伺服器端，斷線不會取消）
@@ -865,77 +903,59 @@ bash <nfs-dir>/minimax_h3/host/h3-router.sh up|down|restart|status|logs</pre></d
       <div class="step">
         <div class="no2">1</div>
         <div>
-          <h4>產生請求檔<small>先選任務，再勾要用的素材，下面即時產生可直接用的 JSON</small></h4>
+          <h4>產生請求<small>選好參數，下面依序是素材怎麼給、request.json、送出任務（curl／Python／TypeScript／Go），說明在最後</small></h4>
           <div class="gen">
+            <div class="estbox" id="apiEst"></div>
+            <div class="grow"><span class="glbl">任務名稱<small style="display:block;font-weight:400;color:var(--muted);font-size:10px;line-height:1.35">選填</small></span><div><input class="apiname" id="apiName" maxlength="80" spellcheck="false" placeholder="不填會自動命名，例如 20260924_091850_&lt;任務 id&gt;"></div></div>
             <div class="grow"><span class="glbl">任務</span><div class="modes" id="apiTask"></div></div>
             <div class="grow"><span class="glbl">素材<small style="display:block;font-weight:400;color:var(--muted);font-size:10px">可複選</small></span><div class="modes" id="apiMats"></div></div>
-            <div class="grow"><span class="glbl">步數<small style="display:block;font-weight:400;color:var(--muted);font-size:10px;line-height:1.35">越大畫質越好，時間也成正比</small></span><div class="opts" id="apiStep"></div></div>
-            <div class="grow"><span class="glbl">片長<small style="display:block;font-weight:400;color:var(--muted);font-size:10px;line-height:1.35">4 到 15 秒</small></span><div class="opts" id="apiDur"></div></div>
+            <div class="grow" id="apiImgRow"><span class="glbl">參考圖張數<small style="display:block;font-weight:400;color:var(--muted);font-size:10px;line-height:1.35">建議 1～2 張</small></span><div class="sld" id="apiImgN"></div></div>
+            <div class="grow"><span class="glbl">步數<small style="display:block;font-weight:400;color:var(--muted);font-size:10px;line-height:1.35">官方預設 50；超過 50 沒實測</small></span><div class="sld" id="apiStep"></div></div>
+            <div class="grow"><span class="glbl">片長<small style="display:block;font-weight:400;color:var(--muted);font-size:10px;line-height:1.35">4 到 15 秒</small></span><div class="sld" id="apiDur"></div></div>
             <div class="grow"><span class="glbl">比例<small style="display:block;font-weight:400;color:var(--muted);font-size:10px;line-height:1.35">短邊固定 768</small></span><div class="opts" id="apiAsp"></div></div>
-            <div class="grow" id="apiSrcRow"><span class="glbl">素材來源</span><div class="opts" id="apiSrc"></div></div>
-            <div class="estbox" id="apiEst"></div>
           </div>
-          <div class="needs" id="apiNeeds"></div>
+          <div class="howmat" id="apiHow" hidden></div>
+          <div class="skilline"><div id="apiToks"></div><div class="skillcta">寫提詞可以用這個 SKILL：<a href="https://ai-gw-02.i17game.net/rockmanx4/frontend/skillhub/file/DXnRM3AndlkRAUs6EyoqUg" target="_blank" rel="noopener">MiniMax-H3 產提詞 SKILL ↗</a></div></div>
           <div class="codebox">
-            <div class="cbhd"><b>request.json</b><span id="apiWhere"></span><button class="copybtn" id="copyJson" type="button">複製</button></div>
+            <div class="cbhd"><b>request.json</b><span id="apiJsonNote"></span><button class="copybtn" id="copyJson" type="button">複製</button></div>
             <pre id="apiJson"></pre>
           </div>
           <div class="codebox">
-            <div class="cbhd"><b>送出程式碼</b><div class="langs" id="apiLang"></div><button class="copybtn" id="copyCode" type="button">複製</button></div>
+            <div class="cbhd"><b>送出任務</b><div class="langs" id="apiLang"></div><span id="apiWhere"></span><button class="copybtn" id="copyCode" type="button">複製</button></div>
             <pre id="apiCode"></pre>
           </div>
+          <div class="needs" id="apiNeeds"></div>
         </div>
       </div>
       <div class="step">
         <div class="no2">2</div>
         <div>
-          <h4>素材怎麼給<small>不必先用 pscp 手動上傳，三種寫法擇一，任務結束會自動刪除</small></h4>
-          <pre><span class="c"># A 最省事：uri 直接寫你電腦上的路徑，把檔案一起附上（一次呼叫）</span>
-curl.exe -X POST http://<spark-2-ip>:30100/v1/videos ^
-  -F "request=@request.json;type=application/json" ^
-  <span class="k">-F "files=@D:
-efs\character.png"</span>
+          <h4>送出後會拿到什麼<small>立刻回一個任務 id（號碼牌）；排隊在伺服器端，斷線或關掉程式都不會取消</small></h4>
+          <pre><span class="c"># 回應</span>
+{ "id": "9326c620-...", "status": "queued", <span class="k">"backend": "ref2va"</span>,
+  "queue_position": 1, "queue_ahead": 0 }
 
-<span class="c"># request.json 裡就寫本機路徑，轉發器用「檔名」比對後自動換成伺服器位址</span>
-"conditions": [ { "type": "image", <span class="k">"uri": "D:/refs/character.png"</span>, "role": "reference" } ]
-
-<span class="c"># 多個素材就多附幾個 -F "files=@..."</span>
-
-<span class="c"># B 先上傳再送：同一份素材要重複用時比較省流量</span>
-curl.exe -s -F "files=@D:
-efs\character.png" http://<spark-2-ip>:30100<span class="k">/v1/uploads</span>
-<span class="c"># 回傳 { "files": [ { "uri": "file://<workspace>/.../character.png" } ] }，把 uri 貼進 request.json</span>
-
-<span class="c"># C 程式化呼叫：uri 直接放 base64</span>
-"uri": "data:image/png;base64,iVBORw0KGgo..."</pre>
-          <p class="warn2" style="border-left-color:var(--good)"><b>自動清除：</b>任務變成 completed 或 failed 時，該任務用到的上傳素材會立刻刪除。客戶端中途斷線、後端拒收也會立刻刪。只用了上傳端點卻沒送任務的檔案，會在轉發器下次啟動時清掉超過 24 小時的部分。<b>只會刪自己建在 <span class="bk">inputs/auto/</span> 底下的東西，你手動放在 <span class="bk">inputs/</span> 的檔案不受影響。</b></p>
+<span class="c"># backend：送去哪個模型。queue_ahead：前面還有幾支</span>
+<span class="c"># 詳情（提示詞、參數、素材）用 GET /v1/videos/&lt;id&gt;/detail 查，任何人都看得到</span></pre>
         </div>
       </div>
       <div class="step">
         <div class="no2">3</div>
-        <div>
-          <h4>送出後會拿到什麼<small>立刻回一個任務 id（號碼牌）；排隊在伺服器端，斷線或關掉程式都不會取消</small></h4>
-          <pre><span class="c"># 回應</span>
-{ "id": "9326c620-...", "status": "queued", <span class="k">"backend": "ref2va"</span>,
-  "queue_position": 1, "queue_ahead": 0, <span class="k">"delete_token": "Xq3v..."</span> }
-
-<span class="c"># backend：送去哪個模型。queue_ahead：前面還有幾支</span>
-<span class="c"># delete_token 只在這裡出現一次，要刪除這支任務時放在標頭 X-Delete-Token</span></pre>
-        </div>
-      </div>
-      <div class="step">
-        <div class="no2">4</div>
         <div>
           <h4>查進度<small>排隊中會多回 queue_ahead（前面還有幾支）；實際步數請看 /v1/progress</small></h4>
           <pre>curl.exe -s http://<spark-2-ip>:30100/v1/videos/&lt;id&gt;
 
 <span class="c"># 完成後會多出這幾個欄位</span>
 { "status": "completed", "inference_time_s": 728.2, "peak_memory_mb": 29752,
-  "file_path": "<workspace>/minimax_h3/outputs/&lt;id&gt;.mp4" }</pre>
+  "file_path": "<workspace>/minimax_h3/outputs/&lt;id&gt;.mp4" }
+
+<span class="c"># status 可能是：queued（排隊或生成中）、completed、failed（error 寫原因）、</span>
+<span class="c">#   stopping（有人刪了它，服務重啟中）、deleted（已被刪除）、lost（伺服器已經沒有這筆）</span>
+<span class="c"># 跑到第幾步、還要多久：GET /v1/progress</span></pre>
         </div>
       </div>
       <div class="step">
-        <div class="no2">5</div>
+        <div class="no2">4</div>
         <div>
           <h4>下載成品<small>轉發器會自動轉回產生它的那個後端</small></h4>
           <pre>curl.exe -s -L http://<spark-2-ip>:30100/v1/videos/&lt;id&gt;/content -o out.mp4</pre>
@@ -953,6 +973,7 @@ efs\character.png" http://<spark-2-ip>:30100<span class="k">/v1/uploads</span>
             <li><b>要給素材</b>：conditions 至少一項</li>
             <li>可用 image、video、audio、video_audio</li>
             <li>prompt 裡用 <code>&lt;Picture 1&gt;</code>、<code>&lt;Video 1&gt;</code>、<code>&lt;Audio 1&gt;</code> 指向素材</li>
+            <li>參考圖可放多張，依 conditions 順序編 <code>&lt;Picture 1&gt;</code>、<code>&lt;Picture 2&gt;</code>…；<b>建議 1～2 張</b>，3 張起可能特徵混淆；每步約慢 27%（2 張）、67%（3 張）</li>
             <li>換角、角色參考、風格參考都走這個</li>
           </ul>
         </div>
@@ -969,7 +990,7 @@ efs\character.png" http://<spark-2-ip>:30100<span class="k">/v1/uploads</span>
           <h5>"task": "fl2va"</h5>
           <div class="sv">→ FL2VA 服務（埠 30120）</div>
           <ul>
-            <li><b>首尾幀補間</b>：給首幀，尾幀選填</li>
+            <li><b>首尾幀補間</b>：給首幀、尾幀，或兩者都給</li>
             <li>適合銜接兩個已有畫面</li>
             <li>尚未實測過</li>
           </ul>
@@ -982,15 +1003,17 @@ efs\character.png" http://<spark-2-ip>:30100<span class="k">/v1/uploads</span>
       <div class="ep">
         <div class="hd2">方法</div><div class="hd2">路徑</div><div class="hd2">用途</div>
         <div><span class="mth post">POST</span></div><div><code>/v1/videos</code></div><div>送出任務；可用 multipart 一併附素材</div>
-        <div><span class="mth post">POST</span></div><div><code>/v1/uploads</code></div><div>只上傳素材，回傳可填進 uri 的位址</div>
         <div><span class="mth get">GET</span></div><div><code>/v1/videos/&lt;id&gt;</code></div><div>查單筆狀態</div>
+        <div><span class="mth get">GET</span></div><div><code>/v1/videos/&lt;id&gt;/detail</code></div><div>詳情：提示詞、參數、素材（任何人都看得到）</div>
         <div><span class="mth get">GET</span></div><div><code>/v1/videos/&lt;id&gt;/content</code></div><div>下載影片</div>
-        <div><span class="mth get">GET</span></div><div><code>/v1/videos</code></div><div>列出兩個後端的所有任務</div>
+        <div><span class="mth get">GET</span></div><div><code>/v1/videos</code></div><div>列出所有任務（兩個後端合併，加上還在排隊的）</div>
+        <div><span class="mth get">GET</span></div><div><code>/v1/progress</code></div><div>正在跑哪一支、第幾步、還要多久，以及轉發器裡的隊伍</div>
         <div><span class="mth get">GET</span></div><div><code>/v1/models</code></div><div>兩個後端載入了什麼</div>
+        <div><span class="mth post">POST</span></div><div><code>/v1/prompt/optimize</code></div><div>AI 優化提詞（Qwen 27B，依 MiniMax 官方 h3-prompt-writing）；回 SSE 串流，最後一筆 <code>done</code> 的 <code>text</code> 就是改寫好的英文提詞</div>
         <div><span class="mth get">GET</span></div><div><code>/health</code></div><div>轉發器與兩個後端的健康、鎖在誰手上</div>
-        <div><span class="mth del">DELETE</span></div><div><code>/v1/videos/&lt;id&gt;</code></div><div>刪記錄，<b>不會停止計算</b></div>
+        <div><span class="mth del">DELETE</span></div><div><code>/v1/videos/&lt;id&gt;</code></div><div>刪除任務（任何人都能刪）：排隊中直接移除；生成中要加 <code>?stop=1</code>；已完成的影片移到回收區</div>
       </div>
-      <p class="warn2"><b>DELETE 不會真的停止生成。</b>要中止進行中的任務，只能在 spark-2 主機重啟該服務：<code>bash <nfs-dir>/minimax_h3/host/h3-up.sh ref2va_fp8 restart</code></p>
+      <p class="warn2"><b>刪除生成中的任務會重啟服務。</b>SGLang 沒有中止功能，<code>DELETE /v1/videos/&lt;id&gt;?stop=1</code> 會重啟那個模型的服務來停下 GPU（FL2VA 約 6 分、Ref2VA 約 7.5 分，期間它的其他任務要等）。快跑完的任務建議等它完成；每次刪除都會記下來源 IP。</p>
     </section>
 
     <section class="panel">
@@ -998,45 +1021,42 @@ efs\character.png" http://<spark-2-ip>:30100<span class="k">/v1/uploads</span>
       <div class="tw"><table>
         <thead><tr><th class="l">欄位</th><th class="l">可用值</th><th class="l">說明</th></tr></thead>
         <tbody>
-          <tr><td class="l"><code>num_inference_steps</code></td><td class="l">8 到 50</td><td class="l">8 步是速度測試，50 步才是正式品質；時間幾乎與步數成正比</td></tr>
+          <tr><td class="l"><code>num_inference_steps</code></td><td class="l">2 到 100</td><td class="l"><b>官方預設 50</b>（正式品質），8 步是速度測試；<b>超過 50 沒實測</b>。程式只要求至少 2 步，沒有上限，100 是這份文件建議的上限。時間幾乎與步數成正比</td></tr>
           <tr><td class="l"><code>target.duration_seconds</code></td><td class="l">4 到 15</td><td class="l">5 秒變 10 秒，每步時間約 ×2.3</td></tr>
           <tr><td class="l"><code>target.short_edge</code></td><td class="l">768</td><td class="l">其他值會印警告；畫質未驗證</td></tr>
           <tr><td class="l"><code>target.aspect_ratio</code></td><td class="l">21:9、16:9、4:3、1:1、3:4、9:16</td><td class="l">16:9 是 1344×768</td></tr>
           <tr><td class="l"><code>seed</code></td><td class="l">整數</td><td class="l">同 seed 加同參數可重現</td></tr>
           <tr><td class="l"><code>flow_shift</code></td><td class="l">12.0</td><td class="l">影片；官方預設，不建議改</td></tr>
           <tr><td class="l"><code>audio_flow_shift</code></td><td class="l">3.0</td><td class="l">聲音；官方預設</td></tr>
-          <tr><td class="l"><code>conditions[].uri</code></td><td class="l"><code>file:///…</code>、本機路徑、<code>data:…;base64,…</code></td><td class="l">本機路徑要搭配 multipart 附檔，轉發器會用檔名比對後改寫</td></tr>
+          <tr><td class="l"><code>conditions[].uri</code></td><td class="l">本機路徑</td><td class="l">要搭配 multipart 附檔（<code>-F "files=@…"</code>），轉發器會用檔名比對後改寫成伺服器位址</td></tr>
+          <tr><td class="l"><code>name</code></td><td class="l">任意文字，80 字內</td><td class="l">選填，任務名稱，顯示在生成台「最近的任務」與查詢結果。不填會自動命名為 <code>日期_時間_任務 id</code>（台灣時間），例如 <code>20260924_091850_9326c620-…</code></td></tr>
           <tr><td class="l"><code>backend</code></td><td class="l">ref2va、fl2va</td><td class="l">選填，強制指定後端，蓋過 task 的自動判斷</td></tr>
         </tbody>
       </table></div>
     </section>
 
     <section class="panel">
-      <h2>其他常用指令<span>上傳素材、看進度、控制服務</span></h2>
+      <h2>其他常用指令<span>看進度、控制服務</span></h2>
       <div class="step">
         <div class="no2">A</div>
         <div>
-          <h4>手動上傳素材<small>備用做法；平常用上面的 multipart 附檔就好</small></h4>
-          <pre>pscp -P 2201 -pw <password> ref.png root@<spark-1-ip>:<workspace>/minimax_h3/inputs/
-<span class="c"># 這樣放的檔案<b>不會</b>被自動清除，適合長期重複使用的素材</span></pre>
-        </div>
-      </div>
-      <div class="step">
-        <div class="no2">B</div>
-        <div>
-          <h4>看即時去噪進度<small>API 的 progress 永遠是 0，要看真實步數得進容器</small></h4>
-          <pre>ssh -p 2201 root@<spark-1-ip>
+          <h4>看即時去噪進度<small>直接問轉發器就有真實步數；容器內的工具也還能用</small></h4>
+          <pre>curl.exe -s http://<spark-2-ip>:30100/v1/progress   <span class="c"># 正在跑哪一支、第幾步、每步秒數、剩多久；queue 是排隊中的</span>
+
+<span class="c"># 要看更多（記憶體、GPU、log）再進容器：</span>
+ssh -p 2201 root@<spark-1-ip>
 bash <workspace>/minimax_h3/tasks.sh    <span class="c"># 精度組合、任務清單、進行中的步數與預計完成</span>
 bash <workspace>/minimax_h3/status.sh   <span class="c"># 記憶體、GPU、API 健康、最近 log</span></pre>
         </div>
       </div>
       <div class="step">
-        <div class="no2">C</div>
+        <div class="no2">B</div>
         <div>
           <h4>控制服務<small>在 spark-2 主機以 <host-user> 執行</small></h4>
           <pre>bash <nfs-dir>/minimax_h3/host/h3-up.sh ref2va_fp8 up|down|restart|status
 bash <nfs-dir>/minimax_h3/host/h3-up.sh fl2va_fp8  up|down|restart|status
-bash <nfs-dir>/minimax_h3/host/h3-router.sh        up|down|restart|status|logs</pre>
+bash <nfs-dir>/minimax_h3/host/h3-router.sh        up|down|restart|status|logs
+bash <nfs-dir>/minimax_h3/host/h3-control.sh       up|down|status|logs   <span class="c"># 讓「刪除生成中的任務」能重啟服務</span></pre>
         </div>
       </div>
     </section>
@@ -1047,13 +1067,14 @@ bash <nfs-dir>/minimax_h3/host/h3-router.sh        up|down|restart|status|logs</
         <thead><tr><th class="l">現象</th><th class="l">原因</th><th class="l">怎麼辦</th></tr></thead>
         <tbody>
           <tr><td class="l">回 <code>task is required</code></td><td class="l">沒填 task，而且內容判斷不出來</td><td class="l">明確加上 <code>"task"</code> 欄位</td></tr>
-          <tr><td class="l">一直是 queued</td><td class="l">前面還有任務，<code>queue_ahead</code> 是前面的支數</td><td class="l">正常現象，等就好；不要了就 <code>DELETE /v1/videos/&lt;id&gt;</code>，標頭帶 <code>X-Delete-Token</code></td></tr>
-          <tr><td class="l">DELETE 回 403</td><td class="l">沒帶或帶錯刪除權杖</td><td class="l">權杖只在送出時的回應裡（<code>delete_token</code>），要自己存著</td></tr>
+          <tr><td class="l">一直是 queued</td><td class="l">前面還有任務，<code>queue_ahead</code> 是前面的支數</td><td class="l">正常現象，等就好；不要了就 <code>DELETE /v1/videos/&lt;id&gt;</code>（任何人都能刪）</td></tr>
+          <tr><td class="l">刪除已完成的任務</td><td class="l">所有人都看不到這支任務與它的詳情</td><td class="l">影片移到伺服器的 <code>outputs/.trash/</code>，需要找回請洽管理者；每次刪除都會記下來源 IP</td></tr>
           <tr><td class="l">DELETE 回 409</td><td class="l">這支已經在 GPU 上生成；SGLang 沒有中止功能</td><td class="l">加 <code>?stop=1</code> 會<b>重啟該模型的服務</b>來停止它（冷啟動 FL2VA 約 6 分、Ref2VA 約 7.5 分，期間該模型的其他任務要等）；快跑完的就等它完成</td></tr>
           <tr><td class="l">狀態 failed，error 寫「後端拒收」</td><td class="l">輪到它時後端才檢查參數，不合規就擋下</td><td class="l">看 error 裡的原因改參數再送</td></tr>
           <tr><td class="l">回「是本機路徑，但這次沒有附上同名檔案」</td><td class="l">uri 寫了本機路徑卻沒用 multipart 附檔</td><td class="l">加上 <code>-F "files=@&lt;檔案&gt;"</code>，檔名要與 uri 的檔名一致</td></tr>
           <tr><td class="l">素材上傳了但任務沒送成功</td><td class="l">後端拒收或請求格式有誤</td><td class="l">轉發器會立刻刪掉那批素材，不必手動清</td></tr>
-          <tr><td class="l">DELETE 之後 GPU 還在跑</td><td class="l">DELETE 只刪記錄</td><td class="l">要真停得重啟服務</td></tr>
+          <tr><td class="l">兩個素材變成同一張</td><td class="l">附檔同名，或中文檔名被換成底線後撞名，後面的蓋掉前面的</td><td class="l">每個檔案用不同的英文檔名，uri 也跟著改</td></tr>
+          <tr><td class="l">回 503「服務重啟中」</td><td class="l">有人刪了生成中的任務，該模型正在冷啟動</td><td class="l">等幾分鐘；已完成的影片照樣能查、能下載，排隊中的任務會在服務回來後自動送出</td></tr>
         </tbody>
       </table></div>
       <p class="warn2">30110 與 30120 仍可直接存取，但<b>繞過轉發器就沒有排隊保護</b>，兩邊同時生成會讓記憶體貼近上限且互搶 GPU。<b>建議一律走 30100。</b></p>
@@ -1208,7 +1229,9 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
   var $ = function (i) { return document.getElementById(i) };
   if (!$('apiTask')) return;
   var API = 'http://<spark-2-ip>:30100';
-  var IN = 'file://<workspace>/minimax_h3/inputs/';
+  /* prompt 由使用者自己寫；產提詞用 SkillHub 上的 SKILL */
+  var PROMPT = '<你的產影片提詞>';
+  var SKILL = 'https://ai-gw-02.i17game.net/rockmanx4/frontend/skillhub/file/DXnRM3AndlkRAUs6EyoqUg';
 
   /* 規則來源：SGLang task_profiles.py
      - t2va  ：conditions_required=false，完全不接受 conditions
@@ -1228,35 +1251,38 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
 
   var MATS = {
     img: { n: '參考圖', file: 'character.png', local: 'D:/refs/character.png',
-           tok: '&lt;Picture 1&gt;', note: '角色、風格或場景的樣板',
+           tok: '&lt;Picture 1&gt;',
            cond: function (uri) { return { type: 'image', uri: uri, role: 'reference' } } },
     vid: { n: '參考影片', file: 'source.mp4', local: 'D:/refs/source.mp4',
-           tok: '&lt;Video 1&gt;', note: '沿用它的動作與構圖；序列變長，每步約為純圖片的 2.3 倍',
+           tok: '&lt;Video 1&gt;',
            cond: function (uri) { return { type: 'video', uri: uri, role: 'reference' } } },
     av: { n: '影音參考', file: 'source.mp4', local: 'D:/refs/source.mp4',
-          tok: '&lt;Video 1&gt;', note: '與參考影片的差別是連原聲一起吃進去；尚未實測',
+          tok: '&lt;Video 1&gt;',
           cond: function (uri) { return { type: 'video_audio', uri: uri, role: 'reference' } } },
     aud: { n: '參考音訊', file: 'voice.wav', local: 'D:/refs/voice.wav',
-           tok: '&lt;Audio 1&gt;', note: '選了它就<b>不必給片長</b>，時間由音訊長度決定；尚未實測',
+           tok: '&lt;Audio 1&gt;',
            noDuration: true,
            cond: function (uri) { return { type: 'audio', uri: uri, role: 'reference' } } },
     first: { n: '首幀', file: 'first.png', local: 'D:/refs/first.png',
-             note: '<span class="bk">frame_index: 0</span> 代表第一幀；尚未實測',
              cond: function (uri) { return { type: 'image', uri: uri, role: 'keyframe', frame_index: 0 } } },
     last: { n: '尾幀', file: 'last.png', local: 'D:/refs/last.png',
-            note: '<span class="bk">frame_index: -1</span> 代表最後一幀；尚未實測',
             cond: function (uri) { return { type: 'image', uri: uri, role: 'keyframe', frame_index: -1 } } }
   };
 
-  var STEPS = [{ n: '8', v: 8 }, { n: '20', v: 20 }, { n: '30', v: 30 }, { n: '50', v: 50 }];
-  var DURS = [{ n: '5 秒', v: 5.0 }, { n: '10 秒', v: 10.0 }, { n: '15 秒', v: 15.0 }];
+  /* 數字參數用拉桿＋數字輸入；ticks 是建議值（原本的按鈕選項），點了直接套用 */
+  var NUM = {
+    steps: { min: 2, max: 100, step: 1, ticks: [8, 20, 30, 50, 100], unit: '步', v: 8 },
+    dur: { min: 4, max: 15, step: 1, ticks: [5, 10, 15], unit: '秒', v: 5 },
+    imgs: { min: 1, max: 5, step: 1, ticks: [1, 2, 3], unit: '張', v: 1 }
+  };
   var ASPS = [{ n: '16:9', v: '16:9' }, { n: '9:16', v: '9:16' }, { n: '1:1', v: '1:1' }, { n: '4:3', v: '4:3' }];
-  /* 素材放哪：本機附檔（multipart，轉發器上傳並在任務結束後刪除）或已經在 NFS 上 */
-  var SRCS = [{ n: '本機附檔', v: 'local' }, { n: '已在伺服器', v: 'server' }];
+  /* 參考圖可放多張：依順序編 <Picture 1>、<Picture 2>…；實測 2 張每步 ×1.27、3 張 ×1.67 */
+  var IMGMUL = { 1: 1, 2: 1.27, 3: 1.67 };
+  function imgMul(n) { return n <= 1 ? 1 : (IMGMUL[n] || IMGMUL[3] + 0.4 * (n - 3)); }   /* 4 張以上外推 */
   var LANGS = [{ n: 'curl', v: 'curl' }, { n: 'Python', v: 'py' },
                { n: 'TypeScript', v: 'ts' }, { n: 'Go', v: 'go' }];
 
-  var ti = 1, picked = { img: true }, si = 0, di = 0, ai = 0, sri = 0, li = 0;
+  var ti = 1, picked = { img: true }, ai = 0, li = 0;
 
   function single(el, items, get, set) {
     if (!el) return function () { };
@@ -1271,17 +1297,68 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
       });
     };
   }
+  /* 橫向拉桿＋數字框。X 軸刻度是建議值，點刻度直接套用；數字框超出範圍時，離開欄位會拉回範圍內 */
+  function slider(el, c) {
+    if (!el) return function () { };
+    var pct = function (v) { return (v - c.min) / (c.max - c.min) * 100 };
+    el.innerHTML =
+      '<div class="sldrow"><div class="sldtrack">' +
+        '<input type="range" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '" value="' + c.v + '">' +
+        '<div class="sldticks">' + c.ticks.map(function (t) {
+          var p = pct(t);        /* 拉桿頭約 16px 寬：刻度往中間補償半個頭，才會對準 */
+          return '<button type="button" data-v="' + t + '" style="left:calc(' + p + '% + ' +
+                 ((0.5 - p / 100) * 16).toFixed(1) + 'px)">' + t + '</button>';
+        }).join('') + '</div></div>' +
+        '<input type="number" class="sldnum" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '" value="' + c.v + '">' +
+        '<span class="sldunit">' + c.unit + '</span></div>';
+    var rg = el.querySelector('input[type=range]'), nb = el.querySelector('.sldnum');
+    function set(v, typing) {
+      v = Math.round(+v / c.step) * c.step;
+      if (isNaN(v)) return;
+      v = Math.min(c.max, Math.max(c.min, v));
+      c.v = v; rg.value = v;
+      if (!typing) nb.value = v;
+      upd();
+    }
+    rg.addEventListener('input', function () { set(rg.value) });
+    nb.addEventListener('input', function () {
+      if (nb.value !== '' && +nb.value >= c.min && +nb.value <= c.max) set(nb.value, true);
+    });
+    nb.addEventListener('change', function () { set(nb.value === '' ? c.v : nb.value) });
+    el.querySelectorAll('.sldticks button').forEach(function (b) { b.onclick = function () { set(b.dataset.v) } });
+    return function (disabled) {
+      rg.disabled = nb.disabled = !!disabled;
+      el.classList.toggle('off', !!disabled);
+      el.querySelectorAll('.sldticks button').forEach(function (b) {
+        b.disabled = !!disabled;
+        b.setAttribute('aria-pressed', +b.dataset.v === c.v ? 'true' : 'false');
+      });
+    };
+  }
   var sT = single($('apiTask'), TASKS, function () { return ti }, function (i) {
     ti = i; picked = {};
     var d = TASKS[i].mats[0];
     if (d) picked[d] = true;
     upd();
   });
-  var sS = single($('apiStep'), STEPS, function () { return si }, function (i) { si = i; upd() });
-  var sD = single($('apiDur'), DURS, function () { return di }, function (i) { di = i; upd() });
+  var sS = slider($('apiStep'), NUM.steps);
+  var sD = slider($('apiDur'), NUM.dur);
   var sA = single($('apiAsp'), ASPS, function () { return ai }, function (i) { ai = i; upd() });
-  var sSrc = single($('apiSrc'), SRCS, function () { return sri }, function (i) { sri = i; upd() });
   var sL = single($('apiLang'), LANGS, function () { return li }, function (i) { li = i; upd() });
+  var sN = slider($('apiImgN'), NUM.imgs);
+  function nImg() { return (TASKS[ti].k === 'ref2va' && picked.img) ? NUM.imgs.v : 0; }
+  /* 每個素材對應的檔案；參考圖多張時用不同的檔名（轉發器靠檔名配對，同名會互相覆蓋） */
+  function matFiles(k) {
+    var m = MATS[k];
+    if (k !== 'img' || nImg() <= 1) return [{ file: m.file, local: m.local, tok: m.tok }];
+    var out = [];
+    for (var i = 1; i <= nImg(); i++) {
+      out.push({ file: 'character_' + i + '.png', local: 'D:/refs/character_' + i + '.png',
+                 tok: '&lt;Picture ' + i + '&gt;' });
+    }
+    return out;
+  }
+  if ($('apiName')) $('apiName').addEventListener('input', function () { upd() });
 
   function drawMats() {
     var t = TASKS[ti], el = $('apiMats');
@@ -1299,24 +1376,6 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
     });
   }
 
-  var PROMPTS = {
-    t2va: 'A single golden gemstone rotates slowly against a deep blue background, a soft highlight sweeps across its facets, then it comes to a smooth stop. Static camera, no text. Sound: a soft ambient hum with a gentle chime as the highlight passes.',
-    img: '2D cartoon animation in the exact style of <Picture 1>. The character from <Picture 1> walks forward and waves at the camera. Flat colors and bold outlines. Sound: light footsteps and a cheerful hum.',
-    vid: 'Recreate <Video 1> shot for shot, keeping its exact camera framing, scene, timing and motion. Keep the soundtrack of <Video 1>.',
-    swap: 'Recreate <Video 1> shot for shot, keeping its camera framing, timing and motion, but replace the main character with the character from <Picture 1>. Keep the soundtrack of <Video 1>.',
-    aud: 'A musician plays along to the music in <Audio 1>, matching its rhythm and mood. Static medium shot under warm stage light.',
-    ref: 'The scene plays out naturally, following the reference material. Sound: matching ambience.',
-    fl2va: 'A smooth continuous shot with natural motion between the given keyframes. Sound: gentle room ambience.'
-  };
-  function promptFor(t, keys) {
-    if (t.k === 't2va') return PROMPTS.t2va;
-    if (t.k === 'fl2va') return PROMPTS.fl2va;
-    if (keys.indexOf('vid') >= 0 && keys.indexOf('img') >= 0) return PROMPTS.swap;
-    if (keys.indexOf('vid') >= 0 || keys.indexOf('av') >= 0) return PROMPTS.vid;
-    if (keys.indexOf('aud') >= 0 && keys.length === 1) return PROMPTS.aud;
-    if (keys.indexOf('img') >= 0) return PROMPTS.img;
-    return PROMPTS.ref;
-  }
 
   function win(p) { return p.split('/').join('\\'); }
   function basename(p) { return p.split('/').pop(); }
@@ -1333,9 +1392,12 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
     t2va: { pre: 8.4, step: 58.2, dec: 35.7 },
     fl2va: { pre: 8.4, step: 58.2, dec: 35.7 }
   };
-  var DURMUL = { 5: { step: 1, dec: 1, measured: true },
-                 10: { step: 2.23, dec: 1.9, measured: true },
-                 15: { step: 3.6, dec: 2.8, measured: false } };
+  /* 片長倍率：5、10 秒是實測、15 秒外推；拉桿可選任意秒數，中間線性內插、4 秒往外推 */
+  function durMul(d) {
+    var A = [[5, 1, 1], [10, 2.23, 1.9], [15, 3.6, 2.8]];
+    var i = d <= 10 ? 0 : 1, a = A[i], b = A[i + 1], f = (d - a[0]) / (b[0] - a[0]);
+    return { step: a[1] + (b[1] - a[1]) * f, dec: a[2] + (b[2] - a[2]) * f, measured: d === 5 || d === 10 };
+  }
   var VIDEO_MUL = 2.35;   /* 影片參考讓序列變長；此倍率取自 BF16 實測，FP8 未驗證 */
 
   function hhmm(t) {
@@ -1349,26 +1411,30 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
 
   function estimate(t, keys, steps, dur) {
     var b = BASE[t.k] || BASE.t2va;
-    var mul = DURMUL[dur] || DURMUL[5];
+    var mul = durMul(dur);
     var hasVideo = keys.indexOf('vid') >= 0 || keys.indexOf('av') >= 0;
-    var perStep = b.step * mul.step * (hasVideo ? VIDEO_MUL : 1);
+    var imgs = nImg();
+    var perStep = b.step * mul.step * (hasVideo ? VIDEO_MUL : 1) * imgMul(imgs);
     var total = b.pre + (steps - 1) * perStep + b.dec * mul.dec;
     /* 只有這幾組真的量過 */
     var measured =
-      (t.k === 'ref2va' && !hasVideo && keys.length === 1 && keys[0] === 'img' &&
+      (t.k === 'ref2va' && !hasVideo && keys.length === 1 && keys[0] === 'img' && imgs <= 1 &&
         ((dur === 5 && steps === 8) || (dur === 10 && steps === 50))) ||
+      (t.k === 'ref2va' && !hasVideo && keys.length === 1 && keys[0] === 'img' && imgs >= 2 && imgs <= 3 &&
+        dur === 5 && steps === 8) ||
       (t.k === 't2va' && dur === 5 && steps === 8);
-    return { perStep: perStep, total: total, measured: measured, hasVideo: hasVideo, mul: mul };
+    return { perStep: perStep, total: total, measured: measured, hasVideo: hasVideo, mul: mul, imgs: imgs };
   }
 
   /* ---------- 各語言的送出程式碼 ---------- */
   function codeFor(lang, payload, files) {
     var J = JSON.stringify(payload, null, 2);
-    var mp = files.length > 0;
+    var mp = files.length > 0;             /* 有素材就用 multipart 一次送 */
     var L = [];
 
     if (lang === 'curl') {
-      L.push('# 先把上面的 JSON 存成 request.json');
+      L.push('# prompt 的 ' + PROMPT + ' 換成你的提詞；產提詞 SKILL：' + SKILL);
+        L.push('# 先把上面的 JSON 存成 request.json');
       L.push('curl.exe -X POST ' + API + '/v1/videos ^');
       if (mp) {
         L.push('  -F "request=@request.json;type=application/json" ^');
@@ -1389,6 +1455,7 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
       L.push('import json, time, requests');
       L.push('');
       L.push('API = "' + API + '"');
+      L.push('# prompt 的 ' + PROMPT + ' 換成你的提詞；產提詞 SKILL：' + SKILL);
       L.push('payload = ' + J);
       L.push('');
       if (mp) {
@@ -1412,7 +1479,7 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
       L.push('');
       L.push('while True:                       # 等完成');
       L.push('    st = requests.get(f\'{API}/v1/videos/{job["id"]}\', timeout=30).json()');
-      L.push('    if st["status"] in ("completed", "failed", "cancelled", "lost"):');
+      L.push('    if st["status"] in ("completed", "failed", "cancelled", "lost", "deleted"):');
       L.push('        break');
       L.push('    time.sleep(20)');
       L.push('print(st["status"], st.get("inference_time_s"))');
@@ -1429,6 +1496,7 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
       L.push('import { readFile, writeFile } from "node:fs/promises";');
       L.push('');
       L.push('const API = "' + API + '";');
+      L.push('// prompt 的 ' + PROMPT + ' 換成你的提詞；產提詞 SKILL：' + SKILL);
       L.push('const payload = ' + J + ';');
       L.push('');
       if (mp) {
@@ -1452,7 +1520,7 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
       L.push('do {');
       L.push('  await new Promise((r) => setTimeout(r, 20_000));');
       L.push('  st = await (await fetch(`${API}/v1/videos/${job.id}`)).json();');
-      L.push('} while (!["completed", "failed", "cancelled", "lost"].includes(st.status));');
+      L.push('} while (!["completed", "failed", "cancelled", "lost", "deleted"].includes(st.status));');
       L.push('console.log(st.status, st.inference_time_s);');
       L.push('');
       L.push('const mp4 = await fetch(`${API}/v1/videos/${job.id}/content`);');
@@ -1478,6 +1546,7 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
     L.push('const API = "' + API + '"');
     L.push('');
     L.push('func main() {');
+    L.push('\t// prompt 的 ' + PROMPT + ' 換成你的提詞；產提詞 SKILL：' + SKILL);
     L.push('\tpayload := []byte(`' + J + '`)');
     L.push('');
     if (mp) {
@@ -1519,13 +1588,16 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
     L.push('\t\tr, _ := http.Get(API + "/v1/videos/" + id)');
     L.push('\t\tjson.NewDecoder(r.Body).Decode(&st)');
     L.push('\t\tr.Body.Close()');
-    L.push('\t\tif s, _ := st["status"].(string); s == "completed" || s == "failed" || s == "cancelled" || s == "lost" {');
+    L.push('\t\tif s, _ := st["status"].(string); s == "completed" || s == "failed" || s == "cancelled" || s == "lost" || s == "deleted" {');
     L.push('\t\t\tbreak');
     L.push('\t\t}');
     L.push('\t}');
     L.push('\tfmt.Println(st["status"], st["inference_time_s"])');
     L.push('');
-    L.push('\tmp4, _ := http.Get(API + "/v1/videos/" + id + "/content")');
+    L.push('\tmp4, err := http.Get(API + "/v1/videos/" + id + "/content")');
+    L.push('\tif err != nil {');
+    L.push('\t\tpanic(err)');
+    L.push('\t}');
     L.push('\tdefer mp4.Body.Close()');
     L.push('\tout, _ := os.Create("out.mp4")');
     L.push('\tdefer out.Close()');
@@ -1535,61 +1607,104 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
   }
 
   var lastJson = '', lastCode = '';
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  /* 先整段轉義，再把 find 裡的 mark 那段包成 <mark class="fill"> */
+  function markFill(text, fills) {
+    var h = esc(text);
+    fills.forEach(function (x) {
+      var f = esc(x.find), m = esc(x.mark), i = f.indexOf(m);
+      h = h.split(f).join(f.slice(0, i) + '<mark class="fill">' + m + '</mark>' + f.slice(i + m.length));
+    });
+    return h;
+  }
   function upd() {
     var t = TASKS[ti];
     var keys = t.mats.filter(function (k) { return picked[k] });
     var noDur = keys.some(function (k) { return MATS[k].noDuration });
     var need = t.mats.length > 0 && keys.length === 0;
-    var isLocal = SRCS[sri].v === 'local';
 
     drawMats();
-    var srcRow = $('apiSrcRow');
-    if (srcRow) srcRow.style.visibility = keys.length ? 'visible' : 'hidden';
+    var imgRow = $('apiImgRow');
+    if (imgRow) imgRow.style.display = (t.k === 'ref2va' && picked.img) ? '' : 'none';
 
-    var body = { model: 'MiniMaxAI/MiniMax-H3', task: t.task, prompt: promptFor(t, keys) };
+    var body = { model: 'MiniMaxAI/MiniMax-H3', task: t.task, prompt: PROMPT };
+    var nmEl = $('apiName'), nm = nmEl ? nmEl.value.trim() : '';
+    if (nm) body.name = nm;             /* 選填；不填轉發器會自動命名 */
     if (keys.length) {
-      body.conditions = keys.map(function (k) {
-        return MATS[k].cond(isLocal ? MATS[k].local : IN + MATS[k].file);
+      body.conditions = [];
+      keys.forEach(function (k) {
+        matFiles(k).forEach(function (f) { body.conditions.push(MATS[k].cond(f.local)); });
       });
     }
     var target = { short_edge: 768, aspect_ratio: ASPS[ai].v };
-    if (!noDur) target.duration_seconds = DURS[di].v;
+    if (!noDur) target.duration_seconds = NUM.dur.v;
     body.target = target;
-    body.num_inference_steps = STEPS[si].v;
+    body.num_inference_steps = NUM.steps.v;
     body.flow_shift = 12.0;
     body.audio_flow_shift = 3.0;
     body.seed = 1;
 
-    var files = (keys.length && isLocal) ? keys.map(function (k) { return MATS[k].local }) : [];
+    var files = [];
+    if (keys.length) keys.forEach(function (k) { matFiles(k).forEach(function (f) { files.push(f.local) }) });
     files = files.filter(function (f, i) { return files.indexOf(f) === i });   /* 同檔不重複附 */
 
     lastJson = JSON.stringify(body, null, 2);
     lastCode = codeFor(LANGS[li].v, body, files);
-    $('apiJson').textContent = need ? '（請至少選一項素材）' : lastJson;
-    $('apiCode').textContent = need ? '（請至少選一項素材）' : lastCode;
+    /* 要自己換的地方：提詞、素材路徑、curl 的任務 id */
+    var fills = [{ find: '"' + PROMPT + '"', mark: PROMPT }, { find: '/<id>', mark: '<id>' }];
+    files.forEach(function (f) { fills.push({ find: f, mark: f }, { find: win(f), mark: win(f) }) });
+    $('apiJson').innerHTML = need ? '（請至少選一項素材）' : markFill(lastJson, fills);
+    $('apiCode').innerHTML = need ? '（請至少選一項素材）' : markFill(lastCode, fills);
     $('apiWhere').textContent = '→ ' + t.backend;
+    if ($('apiJsonNote')) $('apiJsonNote').textContent = LANGS[li].v === 'curl'
+      ? 'curl 要先把這段存成 request.json'
+      : '已內嵌在下面的程式碼裡，這裡方便單獨複製或存檔';
 
     var n = $('apiNeeds');
     n.style.setProperty('--c', need ? 'var(--bad)' : t.c);
-    var notes = keys.map(function (k) { return '<b>' + MATS[k].n + '</b>：' + MATS[k].note }).join('<br>');
-    var toks = keys.filter(function (k) { return MATS[k].tok });
-    var tokLine = toks.length
-      ? '<div class="tokline"><span class="tokttl">提示詞裡要用代號指向素材</span>' +
-        toks.map(function (k) {
-          return '<span class="tokpair"><span class="ph">' + MATS[k].tok + '</span>' +
-                 '<span class="tokwho">' + MATS[k].n + '</span></span>';
-        }).join('') +
-        '<span class="tokwhy">沒寫代號，模型不知道要參考哪一個素材</span></div>'
+    var toks = [];
+    keys.forEach(function (k) {
+      if (!MATS[k].tok) return;
+      var fs = matFiles(k);
+      fs.forEach(function (f, i) { toks.push({ tok: f.tok, who: MATS[k].n + (fs.length > 1 ? ' ' + (i + 1) : '') }) });
+    });
+    var tokNames = toks.map(function (x) { return x.tok })
+      .filter(function (x, i, a) { return a.indexOf(x) === i });      /* 參考影片與影音參考都是 <Video 1> */
+    var tokLine = tokNames.length
+      ? '<div>提示詞裡要用代號 ' + tokNames.map(function (x) { return '<span class="tokc">' + x + '</span>' }).join(', ') +
+        ' 指向素材</div><div class="tokwhy2">沒寫代號，模型不知道要參考哪一個素材</div>'
       : '';
-    var srcFoot = keys.length
-      ? (isLocal
-        ? '<div class="tokfoot">uri 直接寫你電腦上的路徑，素材用 multipart 一起送。轉發器會上傳並在<b>任務結束後自動刪除</b>。</div>'
-        : '<div class="tokfoot">素材要先放到 NFS 的 <span class="bk">inputs/</span>（用 pscp 或 <span class="bk">POST /v1/uploads</span>）。這樣放的檔案<b>不會</b>被自動刪除。</div>')
-      : '';
-    n.innerHTML = need
-      ? '<b style="color:var(--bad)">這個任務至少要選一項素材</b><br>' + t.hint
-      : '<span class="bk">task = ' + t.task + '</span>　' + t.hint +
-        (notes ? '<br>' + notes : '') + tokLine + srcFoot;
+    /* ---- 素材怎麼給：跟著任務、素材、素材來源切換，顯示在程式碼上面 ---- */
+    var how = $('apiHow');
+    if (how) {
+      var list = [];
+      keys.forEach(function (k) {
+        matFiles(k).forEach(function (f) {
+          var dup = list.filter(function (x) { return x.f.local === f.local })[0];
+          var who = MATS[k].n + (f.tok ? ' · ' + f.tok : '');
+          if (dup) dup.who += '、' + who; else list.push({ f: f, who: who });   /* 同一個檔只列一次 */
+        });
+      });
+      how.hidden = !list.length;
+      how.style.setProperty('--c', t.c);
+      var rows = function (pick) {
+        return '<div class="hmfiles">' + list.map(function (x) {
+          return '<div class="hmfile"><span class="bk">' + pick(x.f) + '</span><span class="hmwho">' + x.who + '</span></div>';
+        }).join('') + '</div>';
+      };
+      how.innerHTML = !list.length ? '' : '<div class="hmhd"><b>素材怎麼給</b><span class="hmtag">本機附檔</span>' +
+          '<span class="hmsub">一次呼叫就好，不必先上傳</span></div>' +
+          '<ol><li>檔案放在下面的路徑，或把程式碼裡的路徑改成你的實際位置：' +
+          rows(function (f) { return win(f.local) }) + '</li>' +
+          '<li><span class="bk">uri</span> 就寫本機路徑，檔案用 multipart 一起附上；下面的程式碼已經寫好。</li>' +
+          '<li>轉發器用<b>檔名</b>把 uri 對上附檔：同一次的檔名不能重複；中文檔名會被換成底線，建議用英文檔名。</li></ol>' +
+          '<div class="hmfoot"><b>自動刪除：</b>任務完成、失敗或被刪除時，這批素材立刻刪掉；客戶端中途斷線、後端拒收也會刪。' +
+          '</div>';
+    }
+    /* 下面只剩「沒選素材」的提醒；代號對照放在提詞 SKILL 那一塊 */
+    n.hidden = !need;
+    n.innerHTML = need ? '<b style="color:var(--bad)">這個任務至少要選一項素材</b><br>' + t.hint : '';
+    if ($('apiToks')) $('apiToks').innerHTML = need ? '' : tokLine;
 
     /* ---- 時間估算 ---- */
     var est = $('apiEst');
@@ -1598,14 +1713,17 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
         est.innerHTML = '<div class="ehd"><span class="ettl">預估生成時間</span><span class="ebig">—</span></div>' +
           '<div class="ebd">選好素材後才能估算。</div>';
       } else {
-        var e = estimate(t, keys, STEPS[si].v, noDur ? 5 : DURS[di].v);
+        var e = estimate(t, keys, NUM.steps.v, noDur ? 5 : NUM.dur.v);
         var why = [];
-        why.push('每步約 ' + Math.round(e.perStep) + ' s × ' + (STEPS[si].v - 1) + ' 次去噪');
+        why.push('每步約 ' + Math.round(e.perStep) + ' s × ' + (NUM.steps.v - 1) + ' 次去噪');
         why.push('前置 ' + Math.round(BASE[t.k].pre) + ' s');
         why.push('解碼 ' + Math.round(BASE[t.k].dec * e.mul.dec) + ' s');
         var caveat = [];
-        if (!e.mul.measured) caveat.push('15 秒的倍率是由 5 秒與 10 秒的實測外推');
+        if (NUM.steps.v > 50) caveat.push('超過 50 步沒實測（官方預設 50），時間依每步速度外推，畫質是否更好也未驗證');
+        if (!e.mul.measured) caveat.push('這個片長沒有實測，倍率由 5、10 秒的實測內插或外推');
         if (e.hasVideo) caveat.push('影片參考的倍率取自 BF16 實測，FP8 未驗證');
+        if (e.imgs >= 2) caveat.push('參考圖 ' + e.imgs + ' 張，每步約為 1 張的 ' + imgMul(e.imgs).toFixed(2) +
+          ' 倍（' + (e.imgs <= 3 ? '實測' : '由 3 張外推') + '）');
         if (noDur) caveat.push('選了參考音訊，實際片長由音訊決定，這裡以 5 秒估');
         if (t.k === 'fl2va') caveat.push('首尾幀尚未實測，借用純文字的速度估算');
         est.innerHTML =
@@ -1615,13 +1733,13 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
           '<div class="ebd">' + why.join('　＋　') +
           (caveat.length ? '<br>' + caveat.join('；') + '。' : '') + '</div>' +
           '<div class="equeue"><b>這個時間不含排隊。</b>兩個模型共用一顆 GPU，' +
-          '同一時間只會有一支任務在算，其餘會被轉發器擋著等。' +
+          '同一時間只會有一支任務在算，其餘在轉發器的隊伍裡等（送出會立刻回號碼牌，斷線也不會取消）。' +
           '所以實際等待 ＝ 前面所有任務的生成時間 ＋ 這一支的時間。' +
-          '要先看有沒有人在跑，呼叫 <span class="bk">GET /health</span> 看 lock 欄位。</div>';
+          '要先看有沒有人在跑，呼叫 <span class="bk">GET /v1/progress</span>：正在跑的那支與 queue。</div>';
       }
     }
 
-    sT(); sS(); sD(noDur); sA(); sSrc(); sL();
+    sT(); sS(); sD(noDur); sA(); sL(); sN();
     $('copyJson').disabled = need;
     $('copyCode').disabled = need;
   }
