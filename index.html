@@ -7,6 +7,7 @@
   --s-ref:#4a3aa7; --s-bf16:#2a78d6; --s-fp8:#eb6834; --s-nvfp4:#1baf7a; --s-long:#c2418f; --s-pending:#9AA6A1;
   --st-text:#2B3A40; --st-visual:#5C6B71; --st-denoise:#8E9CA1; --st-decode:#C2CCD0;   /* 四個階段：一個灰色階，順序即深淺 */
   --good:#3F9A6E; --bad:#C8433B; --btn:#1C2326; --btn-ink:#F2F5F3; --tip:#1C2326; --tip-ink:#F2F5F3;
+  --m-te:#1F8A9E; --m-dit:#6A4FC9; --m-vv:#B7791F; --m-av:#C2418F;   /* 四個子模型：Text encoder／DiT／Video VAE／Audio VAE */
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -14,6 +15,7 @@
     --s-ref:#9085e9; --s-bf16:#3987e5; --s-fp8:#d95926; --s-nvfp4:#199e70; --s-long:#e070b8; --s-pending:#6B7975;
     --st-text:#D5DEE1; --st-visual:#A5B2B7; --st-denoise:#75858B; --st-decode:#4A585E;
     --good:#5BB88A; --bad:#E0625A; --btn:#E6ECEA; --btn-ink:#14181A; --tip:#E6ECEA; --tip-ink:#14181A;
+    --m-te:#4FC3D3; --m-dit:#A28CF0; --m-vv:#E0B64A; --m-av:#E070B8;
   }
 }
 :root[data-theme="dark"]{
@@ -21,6 +23,7 @@
   --s-ref:#9085e9; --s-bf16:#3987e5; --s-fp8:#d95926; --s-nvfp4:#199e70; --s-long:#e070b8; --s-pending:#6B7975;
   --st-text:#D5DEE1; --st-visual:#A5B2B7; --st-denoise:#75858B; --st-decode:#4A585E;
   --good:#5BB88A; --bad:#E0625A; --btn:#E6ECEA; --btn-ink:#14181A; --tip:#E6ECEA; --tip-ink:#14181A;
+  --m-te:#4FC3D3; --m-dit:#A28CF0; --m-vv:#E0B64A; --m-av:#E070B8;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;font-size:15px;line-height:1.6;margin:0}
@@ -303,7 +306,6 @@ td.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 .sb .tot.no{color:var(--bad);font-weight:700}
 .sbaxis{display:grid;grid-template-columns:150px 1fr 86px;gap:10px;margin-top:6px}
 .sbaxis .ax2{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:"IBM Plex Mono",monospace;border-top:1px solid var(--line);padding-top:3px}
-<!-- full-quality:start -->
 .fq{display:flex;flex-direction:column;gap:13px;margin-top:6px}
 .fq .fr{display:grid;grid-template-columns:168px minmax(0,1fr) 96px;gap:10px;align-items:center;font-size:12px}
 .fq .fn{min-width:0}
@@ -318,7 +320,6 @@ td.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 .fq .fkpi small{display:block;color:var(--muted);font-size:10px}
 .fq .fkpi b{font-family:"IBM Plex Mono",monospace;font-size:14px}
 @media (max-width:820px){.fq .fr{grid-template-columns:110px minmax(0,1fr) 74px}.fq .fkpi{grid-template-columns:1fr}}
-<!-- full-quality:end -->
 .memchart{position:relative;margin-top:6px}
 .memchart svg{width:100%;height:auto;display:block;overflow:visible}
 .memchart .gl{stroke:var(--line);stroke-width:.6}
@@ -427,6 +428,127 @@ td.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 .diff .box h3.me{color:var(--me)} .diff .box h3.them{color:var(--them)}
 .why-line{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--ink);background:var(--bg);font-size:13px;border-radius:0 8px 8px 0}
 .why-line b{font-weight:700}
+
+/* 實測總結：問答式大標 */
+.qa .qhead{display:flex;align-items:center;gap:10px}
+.qa .qno{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;color:var(--panel);background:var(--ink);border-radius:6px;padding:1px 7px;flex:none}
+.qa h2.qt{font-size:19px;margin:0}
+.qa .qans{margin:10px 0 6px;font-size:16px;font-weight:700;line-height:1.5;padding:8px 14px;border-left:4px solid var(--ink);background:var(--bg);border-radius:0 8px 8px 0;text-wrap:pretty}
+.qa .qlead{margin:0 0 14px;color:var(--muted);font-size:12.5px}
+.qa h3.qsub{font-size:14px;font-weight:700;margin:22px 0 10px;padding-top:14px;border-top:1px dashed var(--line)}
+.qa h3.qsub span{font-weight:400;color:var(--muted);font-size:12px;margin-left:8px}
+.play{border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:12.5px;border-radius:8px;padding:3px 12px;cursor:pointer}
+.play.pri{background:var(--btn);color:var(--btn-ink);border-color:var(--btn);font-weight:700}
+.qlead .play{font-size:11.5px;padding:1px 10px;vertical-align:1px}
+
+/* Q2：一支任務的流程動畫 */
+.h3ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;padding:3px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--c);color:#fff;font-weight:700}
+.h3msg{font-size:12.5px;color:var(--muted);flex:1 1 280px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h3msg b{color:var(--ink)}
+.h3rig{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr) minmax(0,.7fr);gap:24px}
+.h3rig .col{display:flex;flex-direction:column;gap:10px;justify-content:center;position:relative}
+.h3rig .col:not(:last-child)::after{content:"→";position:absolute;right:-19px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.h3n{--c:var(--muted);border:1.5px solid var(--line);border-radius:10px;background:var(--bg);padding:7px 10px;position:relative;transition:box-shadow .25s,border-color .25s,background .25s,opacity .25s}
+.h3n b{display:block;font-size:13px;line-height:1.35}
+.h3n small{display:block;font-size:11px;color:var(--muted);line-height:1.4}
+.h3n .t{display:block;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h3n.model{border-color:color-mix(in srgb,var(--c) 45%,var(--line))}
+.h3n.model b{color:var(--c)}
+.h3n.big{min-height:128px;display:flex;flex-direction:column;justify-content:center}
+.h3n.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--bg));box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent)}
+.h3n.hl{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 30%,transparent)}
+.h3n.off{opacity:.4;border-style:dashed}
+.h3n.done::after{content:"✓";position:absolute;top:5px;right:8px;font-size:11px;font-weight:700;color:var(--good)}
+.h3dots{display:grid;grid-template-columns:repeat(var(--n,8),1fr);gap:3px;margin-top:7px}
+.h3dots i{height:9px;border-radius:2px;background:var(--soft);transition:background .2s}
+.h3dots i.on{background:var(--c)}
+.h3tl{margin-top:14px}
+.h3tl .bar3{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--soft)}
+.h3tl .bar3 span{height:100%;opacity:.35;transition:opacity .25s}
+.h3tl .bar3 span.on,.h3tl .bar3.done span{opacity:1}
+.h3tl .cap3{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:4px}
+.h3tl .cap3 b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:500}
+@media (max-width:820px){
+  .h3rig{grid-template-columns:1fr;gap:22px}
+  .h3rig .col{flex-direction:row}
+  .h3rig .col>.h3n{flex:1 1 0;min-width:0}
+  .h3rig .col:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-20px;transform:translateX(-50%)}
+  .h3n.big{min-height:0}
+}
+
+/* Q2：子模型卡、Ref2VA／FL2VA 對照 */
+.m4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:960px){.m4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.m4{grid-template-columns:1fr}}
+.mc{border:1px solid var(--line);border-top:3px solid var(--c);border-radius:10px;background:var(--bg);padding:10px 12px;transition:box-shadow .2s}
+.mc:hover,.mc.hl{box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 28%,transparent)}
+.mc h4{margin:0;font-size:14px;color:var(--c)}
+.mc h4 small{display:block;color:var(--muted);font-weight:400;font-size:11px}
+.mc p{margin:6px 0 8px;font-size:12.5px;line-height:1.55}
+.mc dl,.vc dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;margin:0;font-size:12px}
+.mc dt,.vc dt{color:var(--muted)}
+.mc dd,.vc dd{margin:0}
+.mc .x{margin:8px 0 0;font-size:11.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px}
+.mc .x b{color:var(--ink);font-weight:600}
+.rvf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vc{border:1px solid var(--line);border-left:3px solid var(--c);border-radius:0 10px 10px 0;background:var(--bg);padding:10px 14px}
+.vc h4{margin:0 0 8px;color:var(--c);font-size:15px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.vc h4 code{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);font-weight:400}
+.rvf .share{grid-column:1/-1;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;font-size:12.5px;border:1px dashed var(--line);border-radius:10px;padding:8px 14px}
+.rvf .share b{font-weight:700}
+.rvf .share .chips{display:flex;flex-wrap:wrap;gap:6px}
+.rvf .share .chips i{font-style:normal;font-size:11.5px;border:1px solid var(--c);color:var(--c);border-radius:999px;padding:0 8px}
+@media (max-width:820px){.rvf{grid-template-columns:1fr}}
+
+/* Q3：生成時間 */
+.seg.mono button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink)}
+.mx{display:grid;grid-template-columns:84px repeat(var(--cols,4),minmax(118px,1fr));gap:6px;min-width:calc(84px + var(--cols,4) * 124px)}
+.mxh{font-size:11px;color:var(--muted);padding:0 4px 2px;display:flex;flex-direction:column;justify-content:flex-end;line-height:1.35}
+.mxh b{color:var(--ink);font-size:12.5px}
+.mxr{display:flex;align-items:center;font-size:14px;font-weight:700;color:var(--c)}
+.mxc{border:1px solid color-mix(in srgb,var(--c) 45%,var(--line));border-radius:8px;padding:7px 10px;background:color-mix(in srgb,var(--c) var(--p),var(--bg));display:flex;flex-direction:column;min-height:82px}
+.mxc b{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:500;line-height:1.3}
+.mxc b sup{font-size:10px;color:var(--muted);margin-left:1px}
+.mxc.long b{font-size:15px}
+.mxc span{font-size:12px}
+.mxc small{font-size:10.5px;color:var(--muted);margin-top:auto}
+.mxc.none{border-style:dashed;border-color:var(--line);background:transparent;color:var(--muted);font-size:12px;align-items:center;justify-content:center}
+.spctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px;font-size:12px;color:var(--muted)}
+.ps svg{width:100%;height:auto;display:block;overflow:visible}
+.ps .gl{stroke:var(--line);stroke-width:.6}
+.ps text{font-family:"IBM Plex Mono",monospace;font-size:10px;fill:var(--muted)}
+.ps .pl{fill:var(--ink);font-size:10.5px}
+.ps .ln{fill:none;stroke-width:2;stroke-linejoin:round}
+.ps circle{stroke:var(--panel);stroke-width:2}
+.rf{display:flex;flex-direction:column;gap:9px}
+.rf .rr{display:grid;grid-template-columns:92px minmax(0,1fr) 230px;gap:10px;align-items:center;font-size:12px}
+.rf .rn b{font-size:13px}
+.rf .rn small{display:block;color:var(--muted);font-size:10.5px}
+.rf .rb{height:22px;background:var(--soft);border-radius:4px;overflow:hidden}
+.rf .rb i{display:block;height:100%;background:var(--c)}
+.rf .rv{font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+.rf .rv small{color:var(--muted);font-family:"Noto Sans TC",sans-serif}
+.gtt td small.mono{display:block;color:var(--muted);font-size:10.5px}
+@media (max-width:820px){.rf .rr{grid-template-columns:74px minmax(0,1fr)}.rf .rv{grid-column:1/-1}}
+.fq .fn i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.gtt{width:100%;border-collapse:collapse;font-size:12px}
+.gtt th,.gtt td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.gtt th{color:var(--muted);font-weight:500;font-size:11px}
+.gtt td{font-family:"IBM Plex Mono",monospace}
+.gtt th:first-child,.gtt td:first-child{text-align:left;font-family:inherit}
+.gtt td:first-child small{display:block;color:var(--muted);font-size:10.5px}
+.gtt td.na{color:var(--muted)}
+
+/* Q4：可收合區塊 */
+.fold{border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-top:10px}
+.fold>summary{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:10px 14px;font-size:14px;font-weight:700;color:var(--ink)}
+.fold>summary span{font-weight:400;font-size:12px;color:var(--muted)}
+.fold[open]>summary{border-bottom:1px solid var(--line)}
+.fold>.fb{padding:12px 14px;background:var(--panel);border-radius:0 0 10px 10px}
+@media (prefers-reduced-motion: reduce){.h3n,.h3dots i,.h3tl .bar3 span,.mc{transition:none}}
 .diff .steps{display:flex;gap:6px;align-items:stretch;flex-wrap:wrap}
 .diff .steps .st{flex:1;min-width:96px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg);font-size:12px}
 .diff .steps .st small{display:block;color:var(--muted);font-size:10px}
@@ -477,83 +599,139 @@ th.l{text-align:left}
 
 <div class="wrap">
   <header><h1>MiniMax-H3 Spark 實測</h1><p id="gen"></p></header>
-  <div class="tabs" role="tablist"><button class="tabbtn" role="tab" aria-selected="true" data-page="sum">實測總結</button><button class="tabbtn" role="tab" aria-selected="false" data-page="cmp">模型版本與速度比較</button><button class="tabbtn" role="tab" aria-selected="false" data-page="v2v">實測案例（換角、10 秒影片）</button><button class="tabbtn" role="tab" aria-selected="false" data-page="diff">DGX Spark vs RTX 5090</button><button class="tabbtn" role="tab" aria-selected="false" data-page="two">雙模型服務（FP8）</button><button class="tabbtn" role="tab" aria-selected="false" data-page="api">API 指令</button></div>
+  <div class="tabs" role="tablist"><button class="tabbtn" role="tab" aria-selected="true" data-page="sum">實測總結</button><button class="tabbtn" role="tab" aria-selected="false" data-page="api">API 指令</button><button class="tabbtn" role="tab" aria-selected="false" data-page="cmp">模型版本與速度比較</button><button class="tabbtn" role="tab" aria-selected="false" data-page="v2v">實測案例（換角、10 秒影片）</button><button class="tabbtn" role="tab" aria-selected="false" data-page="diff">DGX Spark vs RTX 5090</button><button class="tabbtn" role="tab" aria-selected="false" data-page="two">雙模型服務（FP8）</button></div>
   <div class="page sum" id="page-sum">
-    <section class="panel">
-      <h2>現在跑的是什麼<span>spark-2 上兩個服務同時常駐，前面一個轉發器；以下所有數字都是實測</span></h2>
+    <section class="panel qa" id="q1">
+      <div class="qhead"><span class="qno">Q1</span><h2 class="qt">現在跑的是什麼？</h2></div>
+      <p class="qans">DGX Spark 單機運行 FP8 剪枝版的 Ref2VA 與 FL2VA，並透過 SGLang 部署。</p>
+      <p class="qlead">spark-2 上兩個服務同時常駐，前面一個轉發器分派；下面是兩者用同一段提示詞的成品與實測數字</p>
       <div class="now" id="nowCards"></div>
     </section>
 
-    <section class="panel">
-      <h2>影片生成時間<span>同一支 8 步、5 秒、1344×768、seed 1 的任務；顏色是階段，游標停在色塊上看細節</span></h2>
-      <div class="sb" id="timeBars"></div>
-      <div class="sbaxis"><div></div><div class="ax2" id="timeAxis"></div><div></div></div>
-      <div class="legend" id="timeLeg" style="margin-top:10px"></div>
-      <p class="why-line" id="timeNote"></p>
-    </section>
-
-<!-- full-quality:start -->
-    <section class="panel">
-      <h2>設定拉滿要多久<span>同一個 FP8 剪枝 Ref2VA 服務、同一張參考圖，只把步數與長度調到滿；兩筆都是實測</span></h2>
-      <div class="fq" id="fqBars"></div>
-      <p class="why-line" id="fqNote"></p>
-    </section>
-<!-- full-quality:end -->
-
-
-    <section class="panel">
-      <h2>記憶體用量<span>任務期間 spark-2 的機器總用量，每 5 秒取樣；游標移到圖上看是哪個模型、哪個階段</span></h2>
-      <div class="memchart" id="memChart"></div>
-      <div class="legend" id="memLeg" style="margin-top:10px"></div>
-      <p class="why-line" id="memNote"></p>
-    </section>
-
-    <section class="panel">
-      <h2>成果展示<span>每個版本用同一支漢堡任務產出的影片；失敗的版本說明失敗在哪</span></h2>
-      <div class="sumgrid" id="sumCards"></div>
-    </section>
-
-    <section class="panel">
-      <h2>版本選擇思路<span>為什麼最後選了 FP8 剪枝</span></h2>
-      <div class="why4">
-        <div class="wb" style="--c:var(--s-bf16)">
-          <h4>為什麼不用 BF16 官方未剪枝<span class="verdict no">放不下兩個</span></h4>
-          <ul>
-            <li><b>畫質與速度都最好</b>：每步 74.8 s，是所有版本裡最快的</li>
-            <li><b>但檔案 62 GB</b>，一個服務閒置就要 34 GB、生成時 91 GB</li>
-            <li><b>兩份放不下</b>：機器只有 121 GB，開兩個直接爆</li>
-            <li>只想跑單一模型、又要最好畫質時，這仍是首選</li>
-          </ul>
-        </div>
-        <div class="wb" style="--c:#8a6d1f">
-          <h4>為什麼不用 INT8 剪枝<span class="verdict no">SGLang 會出錯</span></h4>
-          <ul>
-            <li><b>SGLang 有靜默損壞的已知問題</b>：載入時跳過 Q/K/V 重排，輸出變成平坦畫面加雜音，而且不報錯</li>
-            <li><b>我們已經踩過同一個機制</b>：Comfy-Org 的 BF16 剪枝檔輸出全灰，是同一段「猜排列」邏輯的反向錯誤</li>
-            <li><b>檔案大小與 FP8 一樣</b>是 19.5 GB，沒有額外好處</li>
-            <li>美術在 ComfyUI 上能用，是因為 ComfyUI 的載入器沒有這個問題</li>
-          </ul>
-        </div>
-        <div class="wb" style="--c:var(--s-nvfp4)">
-          <h4>為什麼不用 NVFP4<span class="verdict no">暖機就 OOM</span></h4>
-          <ul>
-            <li><b>檔案最小</b>，只有 12.9 GB，載入只要 20 秒</li>
-            <li><b>但第一次運算就爆</b>：35 秒內從 64 GB 衝到 117 GB，被系統殺掉</li>
-            <li><b>已排除所有變因</b>：剪枝與未剪枝、串流與常駐、容器上限 108 與 116 GB，結果全都一樣</li>
-            <li><b>原因在框架不在檔案</b>：SGLang 的 FP4 執行路徑在 GB10 上還沒成熟，官方也從沒在這張晶片上驗證過 FP4</li>
-          </ul>
-        </div>
-        <div class="wb" style="--c:var(--s-ref)">
-          <h4>為什麼沒用 LoRA 加速<span class="verdict no">推論時報錯</span></h4>
-          <ul>
-            <li><b>本來可以快 6 到 12 倍</b>：正式品質從 50 步縮到 4 或 8 步</li>
-            <li><b>檔案沒問題</b>：624 個參數載入成功、套用到 208 層</li>
-            <li><b>第一次運算就崩</b>：SGLang 的 H3 程式直接讀取線性層的量化屬性，但被 LoRA 包住的層沒有這個屬性</li>
-            <li><b>修法只要兩行</b>，上游有同類修正但還沒套到 H3；這是目前最值得補的一項</li>
-          </ul>
-        </div>
+    <section class="panel qa" id="q2">
+      <div class="qhead"><span class="qno">Q2</span><h2 class="qt">MiniMax H3 是什麼？</h2></div>
+      <p class="qans">由四個子模型組成的開源影片生成模型。</p>
+      <p class="qlead">按「▶ 跑一支任務」看一支 8 步、5 秒的任務依序經過哪個模型；切換 Ref2VA／FL2VA 看兩者差在哪。秒數都是實測，動畫本身有加速</p>
+      <div class="h3ctl">
+        <div class="seg" id="h3Seg"><button type="button" data-m="ref" aria-pressed="true" style="--c:var(--s-fp8)">Ref2VA</button><button type="button" data-m="fl" aria-pressed="false" style="--c:var(--s-nvfp4)">FL2VA</button></div>
+        <button type="button" class="play pri" id="h3Play">▶ 跑一支任務</button><button type="button" class="play" id="h3Reset">重來</button>
+        <span class="h3msg" id="h3Msg"></span>
       </div>
-      <p class="why-line"><b>結論</b>：FP8 剪枝是唯一同時滿足三個條件的選項 —— 畫面正確、檔案夠小能放兩份、SGLang 在 GB10 上跑得動。代價是每步比 BF16 慢 28%，換到的是兩個模型同時常駐、不必花 3 分鐘重啟切換。</p>
+      <div class="h3rig" id="h3Rig"></div>
+      <div class="h3tl" id="h3Tl"></div>
+
+      <h3 class="qsub">四個子模型與目前部署的版本<span>游標停在卡片上，上面流程圖會標出它的位置</span></h3>
+      <div class="m4" id="h3Models"></div>
+      <p class="why-line" id="h3Src"></p>
+
+      <h3 class="qsub">Ref2VA 與 FL2VA 差在哪<span>同一套架構的兩份權重，一個服務只能載一份</span></h3>
+      <div class="rvf" id="h3Vs"></div>
+    </section>
+
+    <section class="panel qa" id="q3">
+      <div class="qhead"><span class="qno">Q3</span><h2 class="qt">一支影片要生成多久？</h2></div>
+      <p class="qans" id="q3Ans"></p>
+      <p class="qlead">現行 FP8 剪枝服務跑完的每一支任務都收在這裡（1344×768、24 fps、seed 1）；同一設定跑過多次的，列出次數與範圍</p>
+
+      <h3 class="qsub">步數 × 片長：一支要多久<span>格子越深越久；游標停在格子上看每一次的數字</span></h3>
+      <div class="tw"><div class="mx" id="mx"></div></div>
+      <p class="why-line" id="mxNote"></p>
+
+      <h3 class="qsub">時間花在哪<span>每種設定取一支代表任務；顏色是階段，游標停在色塊上看秒數</span></h3>
+      <div class="spctl"><div class="seg mono" id="spSeg"><button type="button" data-v="pct" aria-pressed="true">比例</button><button type="button" data-v="abs" aria-pressed="false">實際時間</button></div><span id="spHint"></span></div>
+      <div class="fq" id="sp"></div>
+      <div class="legend" id="spLeg"></div>
+      <p class="why-line" id="spNote"></p>
+
+      <h3 class="qsub">影片越長，每一步越慢<span>每個點是一種設定的平均；游標停在點上看細節</span></h3>
+      <div class="ps" id="ps"></div>
+      <p class="why-line" id="psNote"></p>
+
+      <h3 class="qsub">Ref2VA 多放幾張參考圖<span>8 步 · 5 秒，其餘設定相同</span></h3>
+      <div class="rf" id="rf"></div>
+      <p class="why-line" id="rfNote"></p>
+
+      <details class="fold">
+        <summary>全部 <i class="mono" id="runN" style="font-style:normal"></i> 筆實測紀錄<span>時間是 log 的 UTC；＊ 表示 API 已清掉，全程改用 log 時間戳</span></summary>
+        <div class="fb"><div class="tw"><table class="gtt" id="runTbl"></table></div><p class="foot" id="runSrc" style="margin:8px 0 0"></p></div>
+      </details>
+    </section>
+
+    <section class="panel qa" id="q4">
+      <div class="qhead"><span class="qno">Q4</span><h2 class="qt">為什麼選擇這些版本？</h2></div>
+      <p class="qans">FP8 剪枝是唯一「畫面正確、兩份放得下、SGLang 在 GB10 上跑得動」的版本。</p>
+      <p class="qlead">各版本都用同一支 8 步、5 秒、1344×768、seed 1 的漢堡任務比較；點標題展開　<button type="button" class="play" id="foldAll">全部展開</button></p>
+
+      <details class="fold">
+        <summary>各版本生成時間<span>顏色是階段，游標停在色塊上看細節</span></summary>
+        <div class="fb">
+          <div class="sb" id="timeBars"></div>
+          <div class="sbaxis"><div></div><div class="ax2" id="timeAxis"></div><div></div></div>
+          <div class="legend" id="timeLeg" style="margin-top:10px"></div>
+          <p class="why-line" id="timeNote"></p>
+        </div>
+      </details>
+
+      <details class="fold">
+        <summary>記憶體用量<span>任務期間 spark-2 的機器總用量，每 5 秒取樣；游標移到圖上看是哪個模型、哪個階段</span></summary>
+        <div class="fb">
+          <div class="memchart" id="memChart"></div>
+          <div class="legend" id="memLeg" style="margin-top:10px"></div>
+          <p class="why-line" id="memNote"></p>
+        </div>
+      </details>
+
+      <details class="fold">
+        <summary>成果展示<span>每個版本產出的影片；失敗的版本說明失敗在哪</span></summary>
+        <div class="fb">
+          <div class="sumgrid" id="sumCards"></div>
+        </div>
+      </details>
+
+      <details class="fold">
+        <summary>版本選擇思路<span>為什麼最後選了 FP8 剪枝</span></summary>
+        <div class="fb">
+          <div class="why4">
+            <div class="wb" style="--c:var(--s-bf16)">
+              <h4>為什麼不用 BF16 官方未剪枝<span class="verdict no">放不下兩個</span></h4>
+              <ul>
+                <li><b>畫質與速度都最好</b>：每步 74.8 s，是所有版本裡最快的</li>
+                <li><b>但檔案 62 GB</b>，一個服務閒置就要 34 GB、生成時 91 GB</li>
+                <li><b>兩份放不下</b>：機器只有 121 GB，開兩個直接爆</li>
+                <li>只想跑單一模型、又要最好畫質時，這仍是首選</li>
+              </ul>
+            </div>
+            <div class="wb" style="--c:#8a6d1f">
+              <h4>為什麼不用 INT8 剪枝<span class="verdict no">SGLang 會出錯</span></h4>
+              <ul>
+                <li><b>SGLang 有靜默損壞的已知問題</b>：載入時跳過 Q/K/V 重排，輸出變成平坦畫面加雜音，而且不報錯</li>
+                <li><b>我們已經踩過同一個機制</b>：Comfy-Org 的 BF16 剪枝檔輸出全灰，是同一段「猜排列」邏輯的反向錯誤</li>
+                <li><b>檔案大小與 FP8 一樣</b>是 19.5 GB，沒有額外好處</li>
+                <li>美術在 ComfyUI 上能用，是因為 ComfyUI 的載入器沒有這個問題</li>
+              </ul>
+            </div>
+            <div class="wb" style="--c:var(--s-nvfp4)">
+              <h4>為什麼不用 NVFP4<span class="verdict no">暖機就 OOM</span></h4>
+              <ul>
+                <li><b>檔案最小</b>，只有 12.9 GB，載入只要 20 秒</li>
+                <li><b>但第一次運算就爆</b>：35 秒內從 64 GB 衝到 117 GB，被系統殺掉</li>
+                <li><b>已排除所有變因</b>：剪枝與未剪枝、串流與常駐、容器上限 108 與 116 GB，結果全都一樣</li>
+                <li><b>原因在框架不在檔案</b>：SGLang 的 FP4 執行路徑在 GB10 上還沒成熟，官方也從沒在這張晶片上驗證過 FP4</li>
+              </ul>
+            </div>
+            <div class="wb" style="--c:var(--s-ref)">
+              <h4>為什麼沒用 LoRA 加速<span class="verdict no">推論時報錯</span></h4>
+              <ul>
+                <li><b>本來可以快 6 到 12 倍</b>：正式品質從 50 步縮到 4 或 8 步</li>
+                <li><b>檔案沒問題</b>：624 個參數載入成功、套用到 208 層</li>
+                <li><b>第一次運算就崩</b>：SGLang 的 H3 程式直接讀取線性層的量化屬性，但被 LoRA 包住的層沒有這個屬性</li>
+                <li><b>修法只要兩行</b>，上游有同類修正但還沒套到 H3；這是目前最值得補的一項</li>
+              </ul>
+            </div>
+          </div>
+          <p class="why-line"><b>結論</b>：FP8 剪枝是唯一同時滿足三個條件的選項 —— 畫面正確、檔案夠小能放兩份、SGLang 在 GB10 上跑得動。代價是每步比 BF16 慢 28%，換到的是兩個模型同時常駐、不必花 3 分鐘重啟切換。</p>
+        </div>
+      </details>
     </section>
   </div>
 
@@ -831,7 +1009,7 @@ th.l{text-align:left}
       </table></div>
       <details style="margin-top:10px"><summary>提示詞與兩處改寫</summary>
         <div class="prompt">2D cartoon animation in <b>a flat cartoon style</b>. <b>A pink starfish character</b> frantically devours a towering pile of hamburgers, grabbing two or three at a time with both hands and cramming them into his huge open mouth in rapid succession. His cheeks bulge, lettuce and crumbs fly everywhere, the burger pile shrinks fast. Static medium shot in front of a chain-link fence under a blue sky, flat colors and bold outlines. Sound: rapid loud chomping and gulping, wrappers rustling, exaggerated cartoon eating noises.</div>
-        <ul class="b"><li>原文是 <code>in the exact style of &lt;Picture 1&gt;</code>，純文字沒有圖可指，改為 <code>in a flat cartoon style</code></li><li>原文是 <code>The pink starfish character from &lt;Picture 1&gt;</code>，改為 <code>A pink starfish character</code></li><li>其餘一字未動；步數、seed、解析度、片長全部相同</li><li>另有一支金色寶石的純文字任務（每步 56.7 s、全程 7:26），數字與這支一致</li></ul>
+        <ul class="b"><li>原文是 <code>in the exact style of &lt;Picture 1&gt;</code>，純文字沒有圖可指，改為 <code>in a flat cartoon style</code></li><li>原文是 <code>The pink starfish character from &lt;Picture 1&gt;</code>，改為 <code>A pink starfish character</code></li><li>其餘一字未動；步數、seed、解析度、片長全部相同</li><li>另有一支金色寶石的純文字任務（每步 58.3 s、全程 7:26），數字與這支一致</li></ul>
       </details>
     </section>
 
@@ -1081,11 +1259,12 @@ bash <nfs-dir>/minimax_h3/host/h3-control.sh       up|down|status|logs   <span c
     </section>
   </div>
 
-  <p class="foot">資料由 <span class="mono">quant/results_pruned.jsonl</span>、各組 log 與 <span class="mono">mem_samples.csv</span> 產生（<span class="mono">build_report_data.py</span>）。新增一組：跑 <span class="mono">run_test.sh</span>、在 <span class="mono">runs_meta.json</span> 補名稱與顏色、重新產生 data.js。第二分頁的 10 秒案例從 WebUI 送出，沒有 run_test 紀錄，資料取自 serve_spark2.log 與 mem_samples.csv（2026-09-21 補入）。</p>
+  <p class="foot">資料由 <span class="mono">quant/results_pruned.jsonl</span>、各組 log 與 <span class="mono">mem_samples.csv</span> 產生（<span class="mono">build_report_data.py</span>）。新增一組：跑 <span class="mono">run_test.sh</span>、在 <span class="mono">runs_meta.json</span> 補名稱與顏色、重新產生 data.js。「實測總結」Q3 的任務清單另由 <span class="mono">quant_tools/build_measured.py</span> 讀 spark-2 兩個 FP8 服務的 log 與 API，產生 <span class="mono">measured.js</span>（2026-09-29 補入）。第二分頁的 10 秒案例從 WebUI 送出，沒有 run_test 紀錄，資料取自 serve_spark2.log 與 mem_samples.csv（2026-09-21 補入）。</p>
 </div>
 <div id="tip" role="tooltip"></div>
 
 <script src="assets/cmp/data.js?v=202609221439"></script>
+<script src="assets/cmp/measured.js?v=202609291700"></script>
 <script>
 const R=(window.REPORT||{runs:[]}); const ALL=R.runs; const RUNS=ALL.filter(r=>(r.group||"cmp")==="cmp"); const V2V=ALL.filter(r=>r.group==="v2v");
 const $=s=>document.querySelector(s);
@@ -1839,44 +2018,7 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
   })();
 
 
-<!-- full-quality:start -->
-  /* ---------- 2b. 完整設定要多久（兩筆實測對照）---------- */
-  (function(){
-    var box=$('fqBars'); if(!box) return;
-    var FQ=[{"label": "快速（現行預設）", "sub": "8 步 · 5 秒 · 243 幀", "text": 7.94, "visual": 11.78, "denoise": 671.79, "decode": 35.57, "total": 727.97, "per": 96.0, "peak": 29752.0, "iters": 7, "dep": true}, {"label": "完整", "sub": "50 步 · 10 秒 · 243 幀", "text": 8.07, "visual": 11.85, "denoise": 10434.26, "decode": 70.47, "total": 10525.94, "per": 212.8, "peak": 35214.0, "iters": 49, "dep": false}];
-    function hms(t){
-      var h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=Math.round(t%60);
-      if(s===60){m++;s=0;} if(m===60){h++;m=0;}
-      return h? h+' 小時 '+m+' 分' : m+':'+String(s).padStart(2,'0');
-    }
-    var max=Math.max(FQ[0].total,FQ[1].total)*1.04;
-    var PARTS=[['text','文字編碼'],['visual','參考圖編碼'],['denoise','去噪'],['decode','解碼出片']];
-    box.innerHTML=FQ.map(function(r){
-      var segs=PARTS.map(function(p){
-        var v=r[p[0]]; if(v<=0) return '';
-        return '<span class="st-'+p[0]+'" style="width:'+(v/max*100)+'%" data-tip="<b>'+r.label+'</b> · '+p[1]+
-          '<br><b>'+v.toFixed(1)+' s</b>（'+Math.round(v/r.total*100)+'%）"></span>';
-      }).join('');
-      return '<div><div class="fr">'+
-        '<div class="fn"><b>'+r.label+(r.dep?'<span class="dep">現行</span>':'')+'</b><small>'+r.sub+'</small></div>'+
-        '<div class="ftrk">'+segs+'</div>'+
-        '<div class="ftot">'+hms(r.total)+'</div></div>'+
-        '<div class="fkpi">'+
-          '<div><small>去噪每步</small><b>'+r.per.toFixed(1)+' s</b></div>'+
-          '<div><small>去噪次數</small><b>'+r.iters+' 次</b></div>'+
-          '<div data-tip="API 回報的 peak_memory_mb"><small>峰值記憶體</small><b>'+(r.peak/1024).toFixed(1)+' GB</b></div>'+
-        '</div></div>';
-    }).join('');
-    var f=FQ[0],g=FQ[1];
-    $('fqNote').innerHTML='<b>步數調 '+(g.iters/f.iters).toFixed(1)+' 倍、長度加倍，時間變 '+
-      (g.total/f.total).toFixed(1)+' 倍</b>（'+hms(f.total)+' → '+hms(g.total)+'）。'+
-      '兩件事同時發生：去噪次數從 '+f.iters+' 變 '+g.iters+' 次，而影片變長讓每一步要算的內容也變多，'+
-      '每步從 '+f.per.toFixed(1)+' s 漲到 '+g.per.toFixed(1)+' s（'+(g.per/f.per).toFixed(2)+' 倍）。'+
-      '<br>記憶體只多了 '+((g.peak-f.peak)/1024).toFixed(1)+' GB（'+(f.peak/1024).toFixed(1)+' → '+(g.peak/1024).toFixed(1)+
-      ' GB），<b>兩個服務同時常駐仍然放得下</b>；會被吃掉的是時間，不是容量。'+
-      '<br><b>所以日常用 8 步、要交件才開 50 步</b>：50 步的任務一送出，這台機器接下來三小時都在忙。';
-  })();
-<!-- full-quality:end -->
+
 
   /* ---------- 3. 記憶體折線（多模型疊在同一張圖）---------- */
   (function(){
@@ -1947,6 +2089,291 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
         (r.deployed?'<span class="dep" style="font-size:9px;border:1px solid var(--good);color:var(--good);border-radius:999px;padding:0 5px;font-weight:700">現行</span>':'')+
         '<span class="verdict '+v.c+'">'+v.t+'</span></h5>'+body+'<p>'+note+'</p></div>';
     }).join('');
+  })();
+
+  /* ---------- Q2/Q3 共用：現行兩個服務 ---------- */
+  var MODE={
+    ref:{run:byKey['ref2va_fp8_now'], name:'Ref2VA', c:'var(--s-fp8)', task:'ref2va', port:30110,
+         in2:['參考素材','圖、影片或聲音，至少一個'], enc:true},
+    fl: {run:byKey['fl2va_fp8_now'],  name:'FL2VA',  c:'var(--s-nvfp4)', task:'t2va／fl2va', port:30120,
+         in2:['首尾幀（選填）','純文字生成時不用給'], enc:false}
+  };
+  function secs(r,k){var x=stg(r,k);return x?x.secs:0;}
+  function hms2(t){var h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=Math.round(t%60);if(s===60){m++;s=0;}if(m===60){h++;m=0;}return h?h+' 小時 '+m+' 分':m+':'+String(s).padStart(2,'0');}
+
+  /* 四個子模型（部署版本）；n 對應流程圖節點 */
+  var MODELS=[
+    {n:'te', c:'var(--m-te)', name:'Text encoder', sub:'文字編碼器',
+     role:'讀懂提示詞，轉成 DiT 看得懂的條件向量。',
+     kv:[['模型','Qwen3-VL 32B · Heretic 去審查版'],['精度','NVFP4 ＋ INT8 嵌入'],['大小','14.7 GB'],['來源','Momoking（社群）'],['放置','常駐 GPU']],
+     x:'換掉官方 text encoder 後，<b>文字編碼 22.9 → 8.0 s</b>（BF16 服務上實測）'},
+    {n:'dit', c:'var(--m-dit)', name:'DiT', sub:'主模型 · Diffusion Transformer',
+     role:'從雜訊開始一步一步去噪，做出影片與聲音的壓縮草稿；全程九成以上的時間花在這裡。',
+     kv:[['精度','FP8 scaled 剪枝'],['大小','19.6 GB · Ref2VA、FL2VA 各一份'],['來源','Comfy-Org'],['官方版','BF16 · 61.7 GB']],
+     x:'同樣是 BF16，剪枝版 37.5 GB、官方版 61.7 GB，<b>約為官方的六成</b>；再轉 FP8 就是 19.6 GB'},
+    {n:'vv', c:'var(--m-vv)', name:'Video VAE', sub:'影像解碼器',
+     role:'把 DiT 的草稿解碼成畫面。',
+     kv:[['精度','FP16（FP32 檔載入時轉換）'],['大小','5.2 GB'],['來源','官方']],
+     x:'兩個服務共用同一份檔案'},
+    {n:'av', c:'var(--m-av)', name:'Audio VAE', sub:'聲音解碼器',
+     role:'把 DiT 的草稿解碼成聲音。',
+     kv:[['精度','FP32'],['大小','0.56 GB'],['來源','官方']],
+     x:'兩個服務共用同一份檔案'}
+  ];
+  var MC={}; MODELS.forEach(function(m){MC[m.n]=m;});
+
+  /* ---------- Q2：一支任務的流程動畫 ---------- */
+  (function(){
+    var rig=$('h3Rig'); if(!rig||!MODE.ref.run||!MODE.fl.run) return;
+    var msg=$('h3Msg'), tl=$('h3Tl'), btn=$('h3Play'), seg=$('h3Seg');
+    var mode='ref', timers=[], playing=false;
+    function later(f,ms){timers.push(setTimeout(f,ms));}
+    function node(id,cls,c,title,sub,t,extra){
+      return '<div class="h3n '+cls+'" data-n="'+id+'"'+(c?' style="--c:'+c+'"':'')+'><b>'+title+'</b>'+(sub?'<small>'+sub+'</small>':'')+(extra||'')+'<span class="t">'+t+'</span></div>';
+    }
+    function build(){
+      var M=MODE[mode], r=M.run, steps=r.steps||8, dots='';
+      for(var i=0;i<steps;i++) dots+='<i></i>';
+      var dec=secs(r,'decode');
+      rig.innerHTML=
+        '<div class="col">'+node('prompt','io','var(--ink)','提示詞','畫面、動作、聲音','輸入')+
+          node('in2','io'+(M.enc?'':' off'),'var(--ink)',M.in2[0],M.in2[1],M.enc?'輸入':'這次沒給')+'</div>'+
+        '<div class="col">'+node('te','model',MC.te.c,'Text encoder','讀懂提示詞','實測 '+secs(r,'text').toFixed(1)+' s')+
+          node('enc','io'+(M.enc?'':' off'),'var(--st-visual)','參考素材編碼','把素材轉成條件',M.enc?'實測 '+secs(r,'visual').toFixed(1)+' s':'不需要 · 0 s')+'</div>'+
+        '<div class="col">'+node('dit','model big',MC.dit.c,'DiT 主模型','從雜訊一步步去噪',
+          '去噪合計 '+secs(r,'denoise').toFixed(1)+' s',
+          '<div class="h3dots" style="--n:'+steps+'">'+dots+'</div><small style="margin-top:5px"><span class="term" data-tip="8 步的排程實際計時 '+(r.evals||'—')+' 次去噪運算，每次約 '+r.perStep.toFixed(1)+' s">'+steps+' 步 · 每次約 '+r.perStep.toFixed(1)+' s</span></small>')+'</div>'+
+        '<div class="col">'+node('vv','model',MC.vv.c,'Video VAE','解碼成畫面','解碼合計 '+dec.toFixed(1)+' s')+
+          node('av','model',MC.av.c,'Audio VAE','解碼成聲音','與畫面一起解碼')+'</div>'+
+        '<div class="col">'+node('ov','io','var(--ink)','影片','1344×768 · 5 秒','輸出')+node('oa','io','var(--ink)','聲音','跟畫面同步','輸出')+'</div>';
+      var parts=[['text','te','文字編碼'],['visual','enc','參考素材編碼'],['denoise','dit','DiT 去噪'],['decode','vv','VAE 解碼']];
+      var tot=r.total;
+      tl.innerHTML='<div class="bar3">'+parts.map(function(p){
+          var v=secs(r,p[0]); if(v<=0) return '';
+          var c=p[1]==='enc'?'var(--st-visual)':MC[p[1]].c;
+          return '<span data-s="'+p[0]+'" style="width:'+(v/tot*100)+'%;background:'+c+'" data-tip="<b>'+M.name+'</b> · '+p[2]+'<br><b>'+v.toFixed(1)+' s</b>（'+(v/tot*100).toFixed(1)+'%）"></span>';
+        }).join('')+'</div>'+
+        '<div class="cap3"><span>實際比例的時間軸 · 顏色＝負責的模型</span><span>全程 <b>'+mmss(tot)+'</b> · DiT 去噪佔 <b>'+Math.round(secs(r,'denoise')/tot*100)+'%</b></span></div>';
+      hover();
+    }
+    function q(n){return rig.querySelector('[data-n="'+n+'"]');}
+    function on(list){rig.querySelectorAll('.h3n.on').forEach(function(e){e.classList.remove('on');e.classList.add('done');});
+      list.forEach(function(n){var e=q(n); if(e){e.classList.remove('done');e.classList.add('on');}});}
+    function bar(k){tl.querySelectorAll('.bar3 span').forEach(function(e){e.classList.toggle('on',e.dataset.s===k);});}
+    function say(h){msg.innerHTML=h;}
+    function idle(){say('按 <b>▶ 跑一支任務</b>，看一支 8 步、5 秒的 '+MODE[mode].name+' 任務怎麼走完四個模型');}
+    function stop(){timers.forEach(clearTimeout);timers=[];playing=false;btn.textContent='▶ 跑一支任務';btn.classList.add('pri');}
+    function reset(){stop();build();idle();}
+    function play(){
+      reset(); playing=true; btn.textContent='■ 停'; btn.classList.remove('pri');
+      var M=MODE[mode], r=M.run, steps=r.steps||8, t=0, STEP=520;
+      later(function(){on(['prompt','te']);bar('text');say('① <b>Text encoder</b> 讀懂提示詞 · 實測 <b>'+secs(r,'text').toFixed(1)+' s</b>');},t); t+=1300;
+      if(M.enc){later(function(){on(['in2','enc']);bar('visual');say('② <b>編碼參考素材</b> · 實測 <b>'+secs(r,'visual').toFixed(1)+' s</b>');},t); t+=1300;}
+      later(function(){on(['dit']);bar('denoise');},t);
+      var dots=function(){return rig.querySelectorAll('.h3dots i');};
+      for(var i=0;i<steps;i++)(function(i){later(function(){dots()[i].classList.add('on');
+        say((M.enc?'③':'②')+' <b>DiT 去噪</b> 第 <b>'+(i+1)+' / '+steps+'</b> 步 · 去噪合計實測 <b>'+secs(r,'denoise').toFixed(1)+' s</b>');},t+i*STEP);})(i);
+      t+=steps*STEP+200;
+      later(function(){on(['vv','av']);bar('decode');say((M.enc?'④':'③')+' <b>Video VAE ＋ Audio VAE</b> 解碼 · 實測 <b>'+secs(r,'decode').toFixed(1)+' s</b>');},t); t+=1500;
+      later(function(){on(['ov','oa']);bar('');tl.querySelector('.bar3').classList.add('done');
+        say('完成 · 全程實測 <b>'+mmss(r.total)+'</b>，其中 DiT 去噪 <b>'+Math.round(secs(r,'denoise')/r.total*100)+'%</b>');},t);
+      later(function(){rig.querySelectorAll('.h3n.on').forEach(function(e){e.classList.remove('on');e.classList.add('done');});stop();},t+900);
+    }
+    /* 子模型卡 ↔ 流程圖節點互相標示 */
+    function hover(){
+      document.querySelectorAll('#h3Models .mc, #h3Rig .h3n.model').forEach(function(el){
+        el.onmouseenter=function(){document.querySelectorAll('[data-n="'+el.dataset.n+'"]').forEach(function(x){x.classList.add('hl');});};
+        el.onmouseleave=function(){document.querySelectorAll('.hl[data-n]').forEach(function(x){x.classList.remove('hl');});};
+      });
+    }
+    btn.onclick=function(){ if(playing) {stop();} else play(); };
+    $('h3Reset').onclick=reset;
+    seg.querySelectorAll('button').forEach(function(b){b.onclick=function(){
+      mode=b.dataset.m; seg.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');}); reset();};});
+
+    /* 子模型卡 */
+    $('h3Models').innerHTML=MODELS.map(function(m){
+      return '<div class="mc" data-n="'+m.n+'" style="--c:'+m.c+'"><h4>'+m.name+'<small>'+m.sub+'</small></h4><p>'+m.role+'</p><dl>'+
+        m.kv.map(function(k){return '<dt>'+k[0]+'</dt><dd>'+k[1]+'</dd>';}).join('')+'</dl><p class="x">'+m.x+'</p></div>';
+    }).join('');
+    $('h3Src').innerHTML='<b>我們沒有自己量化或重新訓練</b>：DiT 用 Comfy-Org 的 FP8 剪枝檔、Text encoder 用 Momoking 的 Heretic NVFP4 版，兩個 VAE 是官方檔。社群檔遇過轉檔瑕疵，用 <code>quant_tools/repair_comfy_safetensors.py</code> 修過才能載入。';
+
+    /* Ref2VA／FL2VA 對照 */
+    function vc(k,input,use,extra){
+      var M=MODE[k], r=M.run;
+      return '<div class="vc" style="--c:'+M.c+'"><h4>'+M.name+'<code>task = '+M.task+' · 埠 '+M.port+'</code></h4><dl>'+
+        '<dt>輸入</dt><dd>'+input+'</dd><dt>用途</dt><dd>'+use+'</dd>'+(extra||'')+
+        '<dt>8 步 5 秒</dt><dd>全程 <b>'+mmss(r.total)+'</b> · 每步 '+r.perStep.toFixed(1)+' s · 峰值 '+(r.peakMB/1024).toFixed(1)+' GB</dd></dl></div>';
+    }
+    var fr=MODE.fl.run, rr=MODE.ref.run;
+    /* 多張參考圖：同為 8 步 5 秒的 Ref2VA，依張數比每步時間（measured.js） */
+    function refLine(){
+      var L=((window.MEASURED||{}).runs||[]).filter(function(x){return x.svc==='ref2va'&&x.steps===8&&Math.round(x.secs)===5&&x.refs;});
+      function avg(n){var a=L.filter(function(x){return x.refs===n}).map(function(x){return x.per});return a.length?a.reduce(function(p,q){return p+q},0)/a.length:null;}
+      var one=avg(1); if(!one) return '';
+      var t=[2,3].map(function(n){var v=avg(n);return v?n+' 張每步慢 '+Math.round((v/one-1)*100)+'%'+(n===3?'（張數推定）':''):null;}).filter(Boolean);
+      return t.length?'<dt>多張參考圖</dt><dd>'+t.join('、')+'；建議 1～2 張</dd>':'';
+    }
+    $('h3Vs').innerHTML=
+      vc('ref','提示詞 ＋ <b>至少一個參考素材</b>（圖、影片、聲音）；提示詞用 <code>&lt;Picture 1&gt;</code> 指向素材','換角、角色參考、風格參考',refLine())+
+      vc('fl','<b>只要提示詞</b>（t2va），或再給首幀／尾幀（fl2va）','純文字生成、銜接兩個已有畫面（首尾幀尚未實測）')+
+      '<div class="share"><b>共用</b><div class="chips"><i style="--c:var(--m-te)">Text encoder</i><i style="--c:var(--m-vv)">Video VAE</i><i style="--c:var(--m-av)">Audio VAE</i><i style="--c:var(--muted)">DiT 結構設定（config 完全相同）</i></div>'+
+      '<b>不同</b><div class="chips"><i style="--c:var(--m-dit)">DiT 權重 · 各 19.6 GB</i></div>'+
+      '<b>速度</b><div>FL2VA 每步快 <b>'+Math.round((1-fr.perStep/rr.perStep)*100)+'%</b>：不必編碼參考素材，去噪時要處理的序列也較短</div></div>';
+
+    build(); idle();
+  })();
+
+  /* ---------- Q3：一支影片要生成多久（全部來自 measured.js）---------- */
+  (function(){
+    var box=$('mx'); if(!box) return;
+    var MEAS=window.MEASURED||{}, RUNS=(MEAS.runs||[]).slice();
+    if(!RUNS.length){box.innerHTML='<p class="foot">沒有實測資料（measured.js）</p>';return;}
+    var SV={ref2va:{name:'Ref2VA',c:MODE.ref.c}, fl2va:{name:'FL2VA',c:MODE.fl.c}};
+    function sl(x){return String(Math.round(x*2)/2);}                 /* 5.17→5、4.46→4.5、10.12→10、15.08→15 */
+    function cfg(r){return r.steps+'|'+sl(r.secs);}
+    function lab(r){return r.steps+' 步 · '+sl(r.secs)+' 秒';}
+    function med(a){var b=a.slice().sort(function(x,y){return x-y}),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;}
+    function mean(a){return a.reduce(function(x,y){return x+y},0)/a.length;}
+    function hc(t){var h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=Math.round(t%60);if(x===60){m++;x=0;}if(m===60){h++;m=0;}var ss=String(x).padStart(2,'0');return h?h+':'+String(m).padStart(2,'0')+':'+ss:m+':'+ss;}
+    function sec(v){return v>=120?v.toFixed(1)+' s（'+hms2(v)+'）':v.toFixed(1)+' s';}
+    function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+    var STAR='<sup>＊</sup>';
+
+    /* 矩陣只放單張參考圖（或張數不明）與純文字；多張參考圖在下面另外比 */
+    var BASE=RUNS.filter(function(r){return !(r.refs>=2);});
+    var COLS=[], G={};
+    BASE.forEach(function(r){var k=cfg(r); if(COLS.indexOf(k)<0) COLS.push(k); (G[r.svc+'@'+k]=G[r.svc+'@'+k]||[]).push(r);});
+    COLS.sort(function(a,b){var A=a.split('|').map(Number),B=b.split('|').map(Number);return (A[0]-B[0])||(A[1]-B[1]);});
+    function stat(list){
+      var t=list.map(function(r){return r.total});
+      return {n:list.length, t:med(t), lo:Math.min.apply(null,t), hi:Math.max.apply(null,t), per:mean(list.map(function(r){return r.per})),
+              log:list.some(function(r){return r.totalSrc!=='api'}), unk:list.some(function(r){return r.svc==='ref2va'&&r.refs==null})};
+    }
+    var tots=BASE.map(function(r){return r.total}), tmin=Math.min.apply(null,tots), tmax=Math.max.apply(null,tots);
+    function shade(t){return Math.round(6+36*Math.log(t/tmin)/Math.log(tmax/tmin));}
+
+    box.style.setProperty('--cols',COLS.length);
+    box.innerHTML='<div class="mxh"></div>'+COLS.map(function(k){var q=k.split('|');
+        return '<div class="mxh"><b>'+q[0]+' 步 · '+q[1]+' 秒</b>'+(+q[0]<=2?'功能測試':'&nbsp;')+'</div>';}).join('')+
+      ['ref2va','fl2va'].map(function(sv){
+        return '<div class="mxr" style="--c:'+SV[sv].c+'">'+SV[sv].name+'</div>'+COLS.map(function(k){
+          var list=G[sv+'@'+k]; if(!list) return '<div class="mxc none">未實測</div>';
+          var st=stat(list);
+          var tip='<b>'+SV[sv].name+' · '+lab(list[0])+'</b>'+list.map(function(r){
+            return '<br>'+r.id.slice(0,8)+' · '+hc(r.total)+(r.totalSrc!=='api'?'＊':'')+(r.name?' · '+esc(r.name):'');}).join('');
+          return '<div class="mxc'+(st.t>=3600?' long':'')+'" style="--c:'+SV[sv].c+';--p:'+shade(st.t)+'%" data-tip="'+tip+'">'+
+            '<b>'+hms2(st.t)+(st.log?STAR:'')+'</b><span>每步 '+st.per.toFixed(1)+' s</span>'+
+            '<small>'+(st.n>1?st.n+' 次 · '+hc(st.lo)+'–'+hc(st.hi):'1 次')+(st.unk?' · 素材不明':'')+'</small></div>';
+        }).join('');
+      }).join('');
+
+    var r85=G['ref2va@8|5'], f85=G['fl2va@8|5'], r5010=G['ref2va@50|10'];
+    var longest=BASE.reduce(function(a,b){return b.total>a.total?b:a});
+    var spread=Object.keys(G).map(function(k){var st=stat(G[k]);return st.n>1?(st.hi-st.lo)/st.lo:null}).filter(function(x){return x!=null});
+    $('q3Ans').innerHTML=(r85&&f85?'8 步、5 秒：Ref2VA 約 '+hms2(stat(r85).t)+'、FL2VA 約 '+hms2(stat(f85).t)+'；':'')+
+      '最長的是 '+SV[longest.svc].name+' '+longest.steps+' 步、'+sl(longest.secs)+' 秒：'+hms2(longest.total)+'。';
+    $('mxNote').innerHTML='<b>格子裡是中位數</b>，下方是跑過幾次與最快到最慢。'+
+      (spread.length?'同一設定重跑的 '+spread.length+' 組，<b>快慢差距都在 '+(Math.max.apply(null,spread)*100).toFixed(1)+'% 以內</b>，數字可以直接拿來估時間。':'')+
+      (r85&&r5010?'<br>步數從 8 調到 50、片長從 5 秒加到 10 秒，Ref2VA 從 '+hms2(stat(r85).t)+' 變 '+hms2(stat(r5010).t)+'（'+(stat(r5010).t/stat(r85).t).toFixed(1)+' 倍）。':'')+
+      '<br>「時間花在哪」每列取最接近中位數的那一支，所以全程會和格子差幾秒。'+
+      '<br>＊ API 已清掉這些任務，全程改用 log 時間戳（文字編碼開始到解碼結束），峰值記憶體也查不到。';
+
+    /* 時間花在哪：每格取最接近中位數的那一支 */
+    var REP=[];
+    ['ref2va','fl2va'].forEach(function(sv){COLS.forEach(function(k){var list=G[sv+'@'+k]; if(!list) return;
+      var m=stat(list).t; REP.push(list.slice().sort(function(a,b){return Math.abs(a.total-m)-Math.abs(b.total-m)})[0]);});});
+    var PARTS=[['text','文字編碼'],['visual','參考圖編碼'],['denoise','去噪'],['decode','VAE 解碼']];
+    var mode='pct';
+    function drawSp(){
+      var mx=Math.max.apply(null,REP.map(function(r){return r.total}));
+      $('sp').innerHTML=REP.map(function(r){
+        var base=mode==='pct'?r.total:mx;
+        var segs=PARTS.map(function(p){var v=r.stages[p[0]]; if(!(v>0.05)) return '';
+          return '<span class="st-'+p[0]+'" style="width:'+(v/base*100)+'%" data-tip="<b>'+SV[r.svc].name+' · '+lab(r)+'</b> · '+p[1]+'<br><b>'+sec(v)+'</b>（'+(v/r.total*100).toFixed(1)+'%）"></span>';}).join('');
+        return '<div class="fr"><div class="fn"><b><i style="background:'+SV[r.svc].c+'"></i>'+SV[r.svc].name+'</b><small>'+lab(r)+' · <span class="mono">'+r.id.slice(0,8)+'</span></small></div>'+
+          '<div class="ftrk">'+segs+'</div><div class="ftot">'+hms2(r.total)+'</div></div>';
+      }).join('');
+      $('spHint').textContent=mode==='pct'?'每條都拉滿，看各階段佔幾成':'同一把尺，看絕對長短（最長 '+hms2(mx)+'）';
+    }
+    $('spSeg').querySelectorAll('button').forEach(function(b){b.onclick=function(){mode=b.dataset.v;
+      $('spSeg').querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');}); drawSp();};});
+    drawSp();
+    $('spLeg').innerHTML=PARTS.map(function(p){return '<span><i class="st-'+p[0]+'"></i>'+p[1]+'</span>';}).join('');
+    var dshare=REP.filter(function(r){return r.steps>2}).map(function(r){return r.stages.denoise/r.total*100});
+    var DEC={}; RUNS.forEach(function(r){(DEC[sl(r.secs)]=DEC[sl(r.secs)]||[]).push(r.stages.decode);});
+    var decTxt=Object.keys(DEC).sort(function(a,b){return a-b}).map(function(k){return k+' 秒 '+Math.round(mean(DEC[k]))+' s';}).join('、');
+    $('spNote').innerHTML='<b>去噪佔全程 '+Math.round(Math.min.apply(null,dshare))+'–'+Math.round(Math.max.apply(null,dshare))+'%</b>，步數越多、片越長，佔比越高。'+
+      '<b>解碼只跟片長有關</b>、跟步數無關：'+decTxt+'。文字與參考圖編碼不到半分鐘，幾乎可以忽略。';
+
+    /* 影片越長、每步越慢 */
+    (function(){
+      var el=$('ps'); if(!el) return;
+      var P=[]; ['ref2va','fl2va'].forEach(function(sv){COLS.forEach(function(k){var list=G[sv+'@'+k]; if(!list||list[0].steps<=2) return;
+        var st=stat(list); P.push({sv:sv, x:+sl(list[0].secs), y:st.per, steps:list[0].steps, n:st.n, unk:st.unk});});});
+      var W=720,H=236,L=46,R=18,T=16,B=30, X=16, Y=Math.ceil(Math.max.apply(null,P.map(function(p){return p.y}))*1.12/50)*50;
+      var sx=function(v){return L+v/X*(W-L-R)}, sy=function(v){return T+(1-v/Y)*(H-T-B)};
+      var g='';
+      for(var v=0;v<=Y;v+=100) g+='<line class="gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+sy(v)+'" y2="'+sy(v)+'"/><text x="'+(L-6)+'" y="'+(sy(v)+3)+'" text-anchor="end">'+v+' s</text>';
+      [0,5,10,15].forEach(function(v){g+='<text x="'+sx(v)+'" y="'+(H-10)+'" text-anchor="middle">'+v+' 秒</text>';});
+      var lines=['ref2va','fl2va'].map(function(sv){
+        var q=P.filter(function(p){return p.sv===sv}).sort(function(a,b){return a.x-b.x});
+        return '<polyline class="ln" style="stroke:'+SV[sv].c+'" points="'+q.map(function(p){return sx(p.x)+','+sy(p.y)}).join(' ')+'"/>';}).join('');
+      var dots=P.map(function(p){
+        var tip='<b>'+SV[p.sv].name+' · '+p.steps+' 步 · '+p.x+' 秒</b><br>每步 <b>'+p.y.toFixed(1)+' s</b>（'+p.n+' 次平均）'+(p.unk?'<br>素材不明':'');
+        var up=p.sv==='ref2va';
+        return '<circle cx="'+sx(p.x)+'" cy="'+sy(p.y)+'" r="5.5" fill="'+SV[p.sv].c+'" data-tip="'+tip+'"/>'+
+          '<text class="pl" x="'+(sx(p.x)+9)+'" y="'+(sy(p.y)+(up?-6:14))+'">'+Math.round(p.y)+' s · '+p.steps+' 步</text>';}).join('');
+      el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="片長與每步去噪時間">'+g+lines+dots+'</svg>'+
+        '<div class="legend">'+['ref2va','fl2va'].map(function(sv){return '<span><i style="background:'+SV[sv].c+'"></i>'+SV[sv].name+'</span>';}).join('')+'<span>橫軸：片長　縱軸：去噪每步秒數</span></div>';
+      function at(sv,x){var p=P.find(function(q){return q.sv===sv&&q.x===x});return p&&p.y;}
+      var parts=['ref2va','fl2va'].map(function(sv){var a=at(sv,5),b=at(sv,15); return a&&b?SV[sv].name+' '+Math.round(a)+' → '+Math.round(b)+' s（'+(b/a).toFixed(1)+' 倍）':null;}).filter(Boolean);
+      $('psNote').innerHTML=(parts.length?'<b>片長從 5 秒變 15 秒（3 倍），每步變慢的倍數更多</b>：'+parts.join('、')+'。影片越長，每一步要算的畫面越多，而且不是等比例增加。':'')+
+        '<br>圖中把不同步數的點放在一起比，前提是每步時間只跟片長有關；目前還沒有「同片長、不同步數」的實測可以直接驗證這一點。';
+    })();
+
+    /* 多張參考圖 */
+    (function(){
+      var el=$('rf'); if(!el) return;
+      var RF=[1,2,3].map(function(n){
+        var l=RUNS.filter(function(r){return r.svc==='ref2va'&&r.refs===n&&cfg(r)==='8|5';}); if(!l.length) return null;
+        return {n:n, l:l, per:mean(l.map(function(r){return r.per})), enc:mean(l.map(function(r){return r.stages.text+r.stages.visual})),
+                t:med(l.map(function(r){return r.total})), inf:l.some(function(r){return /推定/.test(r.refsNote||'')}), log:l.some(function(r){return r.totalSrc!=='api'})};
+      }).filter(Boolean);
+      if(RF.length<2){el.innerHTML='<p class="foot">實測不足</p>';return;}
+      var mx=Math.max.apply(null,RF.map(function(x){return x.per})), one=RF[0].per;
+      el.innerHTML=RF.map(function(x){
+        var tip=x.l.map(function(r){return r.id.slice(0,8)+' · 每步 '+r.per.toFixed(1)+' s'+(r.name?' · '+esc(r.name):'')+(r.refsNote?'<br>　'+esc(r.refsNote):'');}).join('<br>');
+        return '<div class="rr" data-tip="'+tip+'"><div class="rn"><b>'+x.n+' 張</b><small>'+x.l.length+' 次'+(x.inf?' · 張數推定':'')+'</small></div>'+
+          '<div class="rb" style="--c:'+MODE.ref.c+'"><i style="width:'+(x.per/mx*100)+'%;opacity:'+(0.55+0.45*x.n/3)+'"></i></div>'+
+          '<div class="rv">每步 <b>'+x.per.toFixed(1)+' s</b>'+(x.n>1?' <small>＋'+Math.round((x.per/one-1)*100)+'%</small>':'')+' <small>· 全程 '+hms2(x.t)+(x.log?'＊':'')+'</small></div></div>';
+      }).join('');
+      var last=RF[RF.length-1];
+      $('rfNote').innerHTML='<b>每多一張參考圖，去噪每步都會變慢</b>：'+RF.slice(1).map(function(x){return x.n+' 張＋'+Math.round((x.per/one-1)*100)+'%';}).join('、')+
+        '；文字＋參考圖編碼也從 '+RF[0].enc.toFixed(1)+' s 增加到 '+last.enc.toFixed(1)+' s。所以建議 1～2 張：'+last.n+' 張比 1 張每支多花約 '+Math.round((last.t-RF[0].t)/60)+' 分鐘。'+
+        (last.inf?'<br>3 張那筆在轉發器沒有名稱與素材紀錄，張數是依編碼時間推定（'+last.enc.toFixed(1)+' s，約單張的 '+(last.enc/RF[0].enc).toFixed(1)+' 倍）。':'');
+    })();
+
+    /* 全部紀錄 */
+    $('runN').textContent=RUNS.length;
+    function c(v){return v>0.05?v.toFixed(1):'<span class="na">—</span>';}
+    $('runTbl').innerHTML='<thead><tr><th>服務</th><th>任務</th><th>開始（UTC）</th><th>設定</th><th>參考圖</th><th>文字</th><th>參考圖編碼</th><th>去噪</th><th>解碼</th><th>全程</th><th>每步</th><th>峰值</th></tr></thead><tbody>'+
+      RUNS.slice().sort(function(a,b){return a.svc===b.svc?(a.start<b.start?-1:1):(a.svc<b.svc?1:-1);}).map(function(r){
+        var refs=r.svc==='fl2va'?'<span class="na">—</span>':(r.refs==null?'<span class="na" data-tip="'+esc(r.refsNote)+'">不明</span>':(r.refsNote&&r.refsNote.indexOf('推定')>=0?'<span data-tip="'+esc(r.refsNote)+'">'+r.refs+'＊</span>':r.refs));
+        return '<tr><td><b style="color:'+SV[r.svc].c+'">'+SV[r.svc].name+'</b></td><td>'+(r.name?esc(r.name):'<span class="na">—</span>')+'<small class="mono">'+r.id.slice(0,8)+'</small></td>'+
+          '<td>'+r.start+'</td><td>'+lab(r)+'</td><td>'+refs+'</td><td>'+c(r.stages.text)+'</td><td>'+c(r.stages.visual)+'</td><td>'+c(r.stages.denoise)+'</td><td>'+c(r.stages.decode)+'</td>'+
+          '<td><b>'+hms2(r.total)+'</b>'+(r.totalSrc!=='api'?'＊':'')+'</td><td>'+r.per.toFixed(1)+'</td><td>'+(r.peakMB?(r.peakMB/1024).toFixed(1)+' GB':'<span class="na">—</span>')+'</td></tr>';
+      }).join('')+'</tbody>';
+    $('runSrc').textContent='來源：spark-2 上 Ref2VA、FL2VA 兩個服務的 log 與 API，由 quant_tools/build_measured.py 整理（'+(MEAS.generated||'')+'）。秒數單位都是 s；每步 ＝ 去噪秒數 ÷ 實際計時的去噪次數。';
+  })();
+
+  /* ---------- Q4：全部展開／收合 ---------- */
+  (function(){
+    var b=$('foldAll'); if(!b) return;
+    var folds=document.querySelectorAll('#q4 details.fold');
+    function sync(){var all=[].every.call(folds,function(d){return d.open;}); b.textContent=all?'全部收合':'全部展開';}
+    b.onclick=function(){var open=b.textContent==='全部展開'; folds.forEach(function(d){d.open=open;}); sync();};
+    folds.forEach(function(d){d.addEventListener('toggle',sync);});
   })();
 })();
 </script>
