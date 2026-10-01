@@ -4,7 +4,7 @@
 <style>
 :root{
   --bg:#F2F5F3; --panel:#FFFFFF; --ink:#1C2326; --muted:#5F6E69; --line:#D3DBD7; --soft:#E7ECEA;
-  --s-ref:#4a3aa7; --s-bf16:#2a78d6; --s-fp8:#eb6834; --s-nvfp4:#1baf7a; --s-long:#c2418f; --s-pending:#9AA6A1;
+  --s-ref:#4a3aa7; --s-bf16:#2a78d6; --s-fp8:#eb6834; --s-nvfp4:#1baf7a; --s-long:#c2418f; --s-casino:#8a6a1f; --s-horror:#2f6f73; --s-pending:#9AA6A1;
   --st-text:#2B3A40; --st-visual:#5C6B71; --st-denoise:#8E9CA1; --st-decode:#C2CCD0;   /* 四個階段：一個灰色階，順序即深淺 */
   --good:#3F9A6E; --bad:#C8433B; --btn:#1C2326; --btn-ink:#F2F5F3; --tip:#1C2326; --tip-ink:#F2F5F3;
   --m-te:#1F8A9E; --m-dit:#6A4FC9; --m-vv:#B7791F; --m-av:#C2418F;   /* 四個子模型：Text encoder／DiT／Video VAE／Audio VAE */
@@ -12,7 +12,7 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#14181A; --panel:#1D2326; --ink:#E6ECEA; --muted:#98A6A1; --line:#2E383B; --soft:#262F32;
-    --s-ref:#9085e9; --s-bf16:#3987e5; --s-fp8:#d95926; --s-nvfp4:#199e70; --s-long:#e070b8; --s-pending:#6B7975;
+    --s-ref:#9085e9; --s-bf16:#3987e5; --s-fp8:#d95926; --s-nvfp4:#199e70; --s-long:#e070b8; --s-casino:#d4a53a; --s-horror:#5fb3b8; --s-pending:#6B7975;
     --st-text:#D5DEE1; --st-visual:#A5B2B7; --st-denoise:#75858B; --st-decode:#4A585E;
     --good:#5BB88A; --bad:#E0625A; --btn:#E6ECEA; --btn-ink:#14181A; --tip:#E6ECEA; --tip-ink:#14181A;
     --m-te:#4FC3D3; --m-dit:#A28CF0; --m-vv:#E0B64A; --m-av:#E070B8;
@@ -20,7 +20,7 @@
 }
 :root[data-theme="dark"]{
   --bg:#14181A; --panel:#1D2326; --ink:#E6ECEA; --muted:#98A6A1; --line:#2E383B; --soft:#262F32;
-  --s-ref:#9085e9; --s-bf16:#3987e5; --s-fp8:#d95926; --s-nvfp4:#199e70; --s-long:#e070b8; --s-pending:#6B7975;
+  --s-ref:#9085e9; --s-bf16:#3987e5; --s-fp8:#d95926; --s-nvfp4:#199e70; --s-long:#e070b8; --s-casino:#d4a53a; --s-horror:#5fb3b8; --s-pending:#6B7975;
   --st-text:#D5DEE1; --st-visual:#A5B2B7; --st-denoise:#75858B; --st-decode:#4A585E;
   --good:#5BB88A; --bad:#E0625A; --btn:#E6ECEA; --btn-ink:#14181A; --tip:#E6ECEA; --tip-ink:#14181A;
   --m-te:#4FC3D3; --m-dit:#A28CF0; --m-vv:#E0B64A; --m-av:#E070B8;
@@ -593,19 +593,68 @@ td.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 .two .kpis b{font-size:15px}
 td.l{text-align:left;white-space:normal}
 th.l{text-align:left}
+/* 實測案例：可收合卡片 */
+.case{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+#cases{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.case>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;font-size:14px;color:var(--ink)}
+.case>summary::-webkit-details-marker{display:none}
+.case>summary::before{content:"\25B8";color:var(--muted);font-size:11px;transition:transform .2s;flex:none}
+.case[open]>summary::before{transform:rotate(90deg)}
+.case>summary:hover{background:var(--soft)}
+.case>summary:focus-visible{outline:2px solid var(--s-bf16);outline-offset:-2px}
+.case .nm{font-weight:700;display:inline-flex;align-items:center;gap:7px}
+.case .nm i{width:9px;height:9px;border-radius:50%;flex:none}
+.case .mt{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
+.case .mt.tm{margin-left:auto;color:var(--ink);font-weight:500}
+.tg{font-size:11px;padding:1px 9px;border-radius:999px;border:1px solid currentColor;font-weight:500;line-height:1.7;white-space:nowrap}
+.tg.kind{color:var(--muted)}
+.tg.full{color:var(--good)}
+.tg.test{color:var(--muted);border-style:dashed}
+.cbody{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px}
+.cfg{margin:0;font-size:12px;color:var(--muted)}
+/* 提詞英中對照 */
+.pbox>summary,.cbody>details>summary{font-size:13px}
+.pbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.pbar .foot{margin:0}
+button.cp{font:inherit;font-size:12px;padding:3px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button.cp:hover{background:var(--soft)}
+button.cp.ok{color:var(--good);border-color:var(--good)}
+.bi{display:grid;grid-template-columns:116px 1fr 1fr;gap:1px;margin-top:8px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.bi>div{background:var(--bg);padding:8px 11px;font-size:12.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.bi .hd{background:var(--soft);color:var(--muted);font-size:11px;letter-spacing:.04em;white-space:nowrap}
+.bi .bik{color:var(--muted);font-size:11.5px;white-space:normal}
+.bi .bien{font-family:"IBM Plex Mono","Consolas",monospace;font-size:11.5px;color:var(--muted)}
+.bi .bizh{color:var(--ink)}
+@media (max-width:820px){.bi{grid-template-columns:1fr}.bi .hd{display:none}.bi .bik{background:var(--soft);font-weight:700}}
+.tabbtn .nt{font-size:10px;font-weight:400;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 6px;margin-left:6px;vertical-align:1px;line-height:1.6}
+.tabbtn[aria-selected="true"] .nt{color:var(--muted)}
+/* Q1：完整版範例 */
+.nowfull{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start;border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:14px;margin-top:12px}
+@media (max-width:820px){.nowfull{grid-template-columns:1fr}}
+.nowfull video{width:100%;display:block;border-radius:8px;background:#000;aspect-ratio:16/9}
+.nowfull h3{margin:0 0 2px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nowfull h3 i{width:9px;height:9px;border-radius:50%;flex:none}
+.nowfull .side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.nowfull .lead{margin:0;font-size:12.5px;color:var(--muted);line-height:1.6}
+.nowfull .fk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.nowfull .fk div{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:7px 10px}
+.nowfull .fk small{display:block;font-size:10.5px;color:var(--muted)}
+.nowfull .fk b{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:15px}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion: reduce){.bar,.bar.stack span,details summary::before{transition:none}}
 </style>
 
 <div class="wrap">
   <header><h1>MiniMax-H3 Spark 實測</h1><p id="gen"></p></header>
-  <div class="tabs" role="tablist"><button class="tabbtn" role="tab" aria-selected="true" data-page="sum">實測總結</button><button class="tabbtn" role="tab" aria-selected="false" data-page="api">API 指令</button><button class="tabbtn" role="tab" aria-selected="false" data-page="cmp">模型版本與速度比較</button><button class="tabbtn" role="tab" aria-selected="false" data-page="v2v">實測案例（換角、10 秒影片）</button><button class="tabbtn" role="tab" aria-selected="false" data-page="diff">DGX Spark vs RTX 5090</button><button class="tabbtn" role="tab" aria-selected="false" data-page="two">雙模型服務（FP8）</button></div>
+  <div class="tabs" role="tablist"><button class="tabbtn" role="tab" aria-selected="true" data-page="sum">實測總結</button><button class="tabbtn" role="tab" aria-selected="false" data-page="api">API 指令</button><button class="tabbtn" role="tab" aria-selected="false" data-page="v2v">實測案例總覽</button><button class="tabbtn" role="tab" aria-selected="false" data-page="cmp">模型版本與速度比較<span class="nt">筆記</span></button><button class="tabbtn" role="tab" aria-selected="false" data-page="diff">DGX Spark vs RTX 5090<span class="nt">筆記</span></button><button class="tabbtn" role="tab" aria-selected="false" data-page="two">雙模型服務（FP8）<span class="nt">筆記</span></button></div>
   <div class="page sum" id="page-sum">
     <section class="panel qa" id="q1">
       <div class="qhead"><span class="qno">Q1</span><h2 class="qt">現在跑的是什麼？</h2></div>
       <p class="qans">DGX Spark 單機運行 FP8 剪枝版的 Ref2VA 與 FL2VA，並透過 SGLang 部署。</p>
       <p class="qlead">spark-2 上兩個服務同時常駐，前面一個轉發器分派；下面是兩者用同一段提示詞的成品與實測數字</p>
       <div class="now" id="nowCards"></div>
+      <p class="qlead" style="margin-top:14px">上面兩支是 8 步的實驗性短片，用來比較兩個服務；下面這支是同一套部署跑出來的 50 步完整版，含音效</p>
+      <div class="nowfull" id="nowFull" hidden></div>
     </section>
 
     <section class="panel qa" id="q2">
@@ -813,7 +862,7 @@ th.l{text-align:left}
         <div class="chart" style="grid-column:1/-1"><h3>單支任務全程<span>不含冷啟動；顏色是階段</span></h3><div class="rows" id="case-total"></div><div class="axis" id="case-axis"></div><div class="legend" id="case-lg"></div></div>
       </div>
       <div class="tls" id="case-tls" style="margin-top:14px"></div>
-      <p class="foot" style="margin:10px 0 0">三支任務的記憶體高原都在 106 到 110 GB：序列變長（影片參考、10 秒片長）拉長的是時間，不是記憶體。</p>
+      <p class="foot" style="margin:10px 0 0">換角、10 秒、5 秒三支的記憶體高原都在 106 到 110 GB：序列變長拉長的是時間，不是記憶體。兩支 15 秒預告的取樣峰值（賭場 115.9、恐怖片 115.4 GB）基線就有 90 GB，因為當時 FL2VA 與 Ref2VA 兩個服務同時常駐，不能與單服務的數字直接比；它們自己的 GPU 峰值只有 42.2 與 41.6 GB，是 DiT 換成 FP8 剪枝檔的結果。</p>
     </section>
   </div>
 
@@ -1039,23 +1088,23 @@ th.l{text-align:left}
         </tbody>
       </table></div>
       <pre># 送任務（立刻回號碼牌；排隊在伺服器端，斷線不會取消）
-curl.exe -X POST http://<spark-2-ip>:30100/v1/videos \
+curl.exe -X POST http://{spark-2-ip}:30100/v1/videos \
   -H "Content-Type: application/json" -d "@request_t2va_8.json"
 
 # 查狀態與下載（用同一個埠，會自動轉回正確的後端）
-curl.exe -s http://<spark-2-ip>:30100/v1/videos/&lt;id&gt;
-curl.exe -s -L http://<spark-2-ip>:30100/v1/videos/&lt;id&gt;/content -o out.mp4
+curl.exe -s http://{spark-2-ip}:30100/v1/videos/&lt;id&gt;
+curl.exe -s -L http://{spark-2-ip}:30100/v1/videos/&lt;id&gt;/content -o out.mp4
 
 # 看轉發器與兩個後端的健康、目前鎖在誰手上
-curl.exe -s http://<spark-2-ip>:30100/health</pre>
+curl.exe -s http://{spark-2-ip}:30100/health</pre>
       <p class="warn"><b>兩件要注意的事</b>：一、不填 <code>task</code> 時轉發器會依內容自己推斷並補上，但明確填寫比較保險。二、30110 與 30120 仍可直接存取，但<b>繞過轉發器就沒有排隊保護</b>，建議一律走 30100。</p>
-      <details style="margin-top:10px"><summary>主機端控制指令</summary><pre># 兩個服務（在 spark-2 主機以 <host-user> 執行）
-bash <nfs-dir>/minimax_h3/host/h3-up.sh ref2va_fp8  up|down|restart|status
-bash <nfs-dir>/minimax_h3/host/h3-up.sh fl2va_fp8   up|down|restart|status
-bash <nfs-dir>/minimax_h3/host/h3-up.sh ref2va_bf16 restart   # 換回 BF16 單模型
+      <details style="margin-top:10px"><summary>主機端控制指令</summary><pre># 兩個服務（在 spark-2 主機以 {host-user} 執行）
+bash {nfs-dir}/minimax_h3/host/h3-up.sh ref2va_fp8  up|down|restart|status
+bash {nfs-dir}/minimax_h3/host/h3-up.sh fl2va_fp8   up|down|restart|status
+bash {nfs-dir}/minimax_h3/host/h3-up.sh ref2va_bf16 restart   # 換回 BF16 單模型
 
 # 轉發器
-bash <nfs-dir>/minimax_h3/host/h3-router.sh up|down|restart|status|logs</pre></details>
+bash {nfs-dir}/minimax_h3/host/h3-router.sh up|down|restart|status|logs</pre></details>
     </section>
 
     <section class="panel">
@@ -1121,11 +1170,11 @@ bash <nfs-dir>/minimax_h3/host/h3-router.sh up|down|restart|status|logs</pre></d
         <div class="no2">3</div>
         <div>
           <h4>查進度<small>排隊中會多回 queue_ahead（前面還有幾支）；實際步數請看 /v1/progress</small></h4>
-          <pre>curl.exe -s http://<spark-2-ip>:30100/v1/videos/&lt;id&gt;
+          <pre>curl.exe -s http://{spark-2-ip}:30100/v1/videos/&lt;id&gt;
 
 <span class="c"># 完成後會多出這幾個欄位</span>
 { "status": "completed", "inference_time_s": 728.2, "peak_memory_mb": 29752,
-  "file_path": "<workspace>/minimax_h3/outputs/&lt;id&gt;.mp4" }
+  "file_path": "{workspace}/minimax_h3/outputs/&lt;id&gt;.mp4" }
 
 <span class="c"># status 可能是：queued（排隊或生成中）、completed、failed（error 寫原因）、</span>
 <span class="c">#   stopping（有人刪了它，服務重啟中）、deleted（已被刪除）、lost（伺服器已經沒有這筆）</span>
@@ -1136,7 +1185,7 @@ bash <nfs-dir>/minimax_h3/host/h3-router.sh up|down|restart|status|logs</pre></d
         <div class="no2">4</div>
         <div>
           <h4>下載成品<small>轉發器會自動轉回產生它的那個後端</small></h4>
-          <pre>curl.exe -s -L http://<spark-2-ip>:30100/v1/videos/&lt;id&gt;/content -o out.mp4</pre>
+          <pre>curl.exe -s -L http://{spark-2-ip}:30100/v1/videos/&lt;id&gt;/content -o out.mp4</pre>
         </div>
       </div>
     </section>
@@ -1219,22 +1268,22 @@ bash <nfs-dir>/minimax_h3/host/h3-router.sh up|down|restart|status|logs</pre></d
         <div class="no2">A</div>
         <div>
           <h4>看即時去噪進度<small>直接問轉發器就有真實步數；容器內的工具也還能用</small></h4>
-          <pre>curl.exe -s http://<spark-2-ip>:30100/v1/progress   <span class="c"># 正在跑哪一支、第幾步、每步秒數、剩多久；queue 是排隊中的</span>
+          <pre>curl.exe -s http://{spark-2-ip}:30100/v1/progress   <span class="c"># 正在跑哪一支、第幾步、每步秒數、剩多久；queue 是排隊中的</span>
 
 <span class="c"># 要看更多（記憶體、GPU、log）再進容器：</span>
-ssh -p 2201 root@<spark-1-ip>
-bash <workspace>/minimax_h3/tasks.sh    <span class="c"># 精度組合、任務清單、進行中的步數與預計完成</span>
-bash <workspace>/minimax_h3/status.sh   <span class="c"># 記憶體、GPU、API 健康、最近 log</span></pre>
+ssh -p 2201 root@{spark-1-ip}
+bash {workspace}/minimax_h3/tasks.sh    <span class="c"># 精度組合、任務清單、進行中的步數與預計完成</span>
+bash {workspace}/minimax_h3/status.sh   <span class="c"># 記憶體、GPU、API 健康、最近 log</span></pre>
         </div>
       </div>
       <div class="step">
         <div class="no2">B</div>
         <div>
-          <h4>控制服務<small>在 spark-2 主機以 <host-user> 執行</small></h4>
-          <pre>bash <nfs-dir>/minimax_h3/host/h3-up.sh ref2va_fp8 up|down|restart|status
-bash <nfs-dir>/minimax_h3/host/h3-up.sh fl2va_fp8  up|down|restart|status
-bash <nfs-dir>/minimax_h3/host/h3-router.sh        up|down|restart|status|logs
-bash <nfs-dir>/minimax_h3/host/h3-control.sh       up|down|status|logs   <span class="c"># 讓「刪除生成中的任務」能重啟服務</span></pre>
+          <h4>控制服務<small>在 spark-2 主機以 {host-user} 執行</small></h4>
+          <pre>bash {nfs-dir}/minimax_h3/host/h3-up.sh ref2va_fp8 up|down|restart|status
+bash {nfs-dir}/minimax_h3/host/h3-up.sh fl2va_fp8  up|down|restart|status
+bash {nfs-dir}/minimax_h3/host/h3-router.sh        up|down|restart|status|logs
+bash {nfs-dir}/minimax_h3/host/h3-control.sh       up|down|status|logs   <span class="c"># 讓「刪除生成中的任務」能重啟服務</span></pre>
         </div>
       </div>
     </section>
@@ -1263,7 +1312,7 @@ bash <nfs-dir>/minimax_h3/host/h3-control.sh       up|down|status|logs   <span c
 </div>
 <div id="tip" role="tooltip"></div>
 
-<script src="assets/cmp/data.js?v=202609221439"></script>
+<script src="assets/cmp/data.js?v=202610011210"></script>
 <script src="assets/cmp/measured.js?v=202609291700"></script>
 <script>
 const R=(window.REPORT||{runs:[]}); const ALL=R.runs; const RUNS=ALL.filter(r=>(r.group||"cmp")==="cmp"); const V2V=ALL.filter(r=>r.group==="v2v");
@@ -1363,29 +1412,50 @@ apply();
 (function(){
   if(!V2V.length){ $("#cases").innerHTML="<section class='panel'><p class='foot'>尚無資料</p></section>"; return; }
   const esc=x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  $("#cases").innerHTML=V2V.map(r=>{
+  const hms=x=>{if(x==null)return "\u2014";const h=Math.floor(x/3600),m=Math.round(x%3600/60);return h?`${h} \u5c0f\u6642 ${m} \u5206`:`${Math.floor(x/60)} \u5206 ${Math.round(x%60)} \u79d2`;};
+  $("#cases").innerHTML=V2V.map((r,i)=>{
     const dot=`<i style="background:${r.color}"></i>`;
-    const refs=(r.refVideo?`<div class="box"><h4>參考影片 <code>&lt;Video 1&gt;</code> · BF16 漢堡影片</h4><video src="${r.refVideo}" poster="${r.refVideoPoster}" controls preload="none" playsinline></video></div>`:"")
-      +`<div class="box img"><h4>參考圖 <code>&lt;Picture 1&gt;</code></h4><img src="${r.refImage}" alt="${r.name} 的參考圖"></div>`
-      +`<div class="box"><h4>${dot}成品 · ${r.steps||"—"} 步${r.duration?` · ${r.duration} 秒`:""} <code>#${(r.id||"").slice(0,8)}</code></h4>${ok(r)?`<video src="${r.video}" poster="${r.poster}" controls preload="none" playsinline aria-label="${r.name} 輸出影片"></video>`:`<div class="ph">未完成</div>`}</div>`;
-    const peak=r.peakFromSamples
-      ?`<div data-tip="API 未回報 peak_memory_mb，取每 5 秒取樣的最高值"><small>峰值（取樣）</small><b>${fmt(r.peakSampledGB,0)} GB</b></div>`
-      :`<div data-tip="API peak_memory_mb"><small>GPU 峰值</small><b>${r.peakMB?fmt(r.peakMB/1024,0)+" GB":"—"}</b></div>`;
-    const kpis=`<div data-tip="服務載入的 DiT 檔"><small>DiT</small><b class="txt">${r.prec?.dit||"—"}</b></div>`
-      +`<div data-tip="服務載入的文字編碼器"><small>Text encoder</small><b class="txt">${r.prec?.te||"—"}</b></div>`
-      +`<div data-tip="容器啟動到 /health 200（此服務啟動時）${r.coldStartApprox?"；log 沒有就緒時間戳，由暖機解碼的時間推算":""}"><small>冷啟動</small><b>${r.coldStartApprox?"≈":""}${mmss(r.coldStart)}</b></div>`
-      +`<div data-tip="送出到完成，不含冷啟動"><small>全程</small><b>${mmss(r.total)}</b></div>`
-      +`<div data-tip="去噪 ${r.evals} 次的平均"><small>去噪每步</small><b>${r.perStep?fmt(r.perStep,0)+" s":"—"}</b></div>`
-      +peak
-      +`<div data-tip="步數；去噪次數 = 步數 − 1"><small>步數</small><b>${r.steps||"—"}</b></div>`
-      +(r.duration?`<div data-tip="${r.frames||""} 幀 · 24 fps"><small>片長</small><b>${r.duration} s</b></div>`:"");
-    return `<section class="panel case" data-k="${r.key}">
-      <h2>${dot}${r.name}<span>${r.sub||""}${r.source?` · 從 ${r.source} 送出`:""}</span></h2>
-      <div class="v2v-refs${r.refVideo?"":" two"}">${refs}</div>
-      <details style="margin-top:10px"><summary>Prompt${r.promptNote?"（推定）":""}</summary><div class="prompt">${esc(r.prompt)}</div>${r.promptNote?`<p class="foot" style="margin:6px 0 0">${r.promptNote}</p>`:""}</details>
-      <div class="kpis" style="margin-top:12px">${kpis}</div>
-      <details style="margin-top:10px"><summary>備註與載入紀錄</summary><ul class="b">${(r.notes||[]).map(n=>`<li>${n}</li>`).join("")}<li><b>參數</b>：<code class="mono" style="font-size:11px;word-break:break-all">${r.extra_args||""}</code></li><li><b>載入</b>：${r.loaded||""}</li></ul></details>
-    </section>`;}).join("");
+    const refs=(r.refVideo?`<div class="box"><h4>\u53c3\u8003\u5f71\u7247 <code>&lt;Video 1&gt;</code></h4><video src="${r.refVideo}" poster="${r.refVideoPoster}" controls preload="none" playsinline></video></div>`:"")
+      +`<div class="box img"><h4>\u53c3\u8003\u5716 <code>&lt;Picture 1&gt;</code></h4><img src="${r.refImage}" alt="${r.name} \u7684\u53c3\u8003\u5716" loading="lazy"></div>`
+      +`<div class="box"><h4>${dot}\u6210\u54c1\u00b7 ${r.duration||"\u2014"} \u79d2 <code>#${(r.id||"").slice(0,8)}</code></h4>${ok(r)?`<video src="${r.video}" poster="${r.poster}" controls preload="none" playsinline aria-label="${r.name} \u8f38\u51fa\u5f71\u7247"></video>`:`<div class="ph">\u672a\u5b8c\u6210</div>`}</div>`;
+    const head=`<span class="nm">${dot}${r.name}</span>`
+      +`<span class="tg kind">${r.kind||"\u2014"}</span>`
+      +`<span class="tg ${r.grade==="\u5b8c\u6574\u7248"?"full":"test"}">${r.grade||""}${r.gradeNote?` \u00b7 ${r.gradeNote}`:""}</span>`
+      +`<span class="mt">${r.duration?r.duration+" \u79d2":""}</span>`
+      +`<span class="mt tm">${hms(r.total)}</span>`;
+    const cfg=`DiT ${r.prec?.dit||"\u2014"} \u00b7 Text encoder ${r.prec?.te||"\u2014"}`
+      +(r.source?` \u00b7 \u5f9e ${r.source} \u9001\u51fa`:"")+(r.seed!=null?` \u00b7 seed ${r.seed}`:"");
+    const kpis=`<div data-tip="\u9001\u51fa\u5230\u5b8c\u6210\uff0c\u4e0d\u542b\u51b7\u555f\u52d5"><small>\u5168\u7a0b</small><b>${mmss(r.total)}</b></div>`
+      +`<div data-tip="\u53bb\u566a ${r.evals} \u6b21\u7684\u5e73\u5747"><small>\u53bb\u566a\u6bcf\u6b65</small><b>${r.perStep?fmt(r.perStep,0)+" s":"\u2014"}</b></div>`
+      +(r.peakMB?`<div data-tip="API peak_memory_mb"><small>GPU \u5cf0\u503c</small><b>${fmt(r.peakMB/1024,1)} GB</b></div>`:"")
+      +(r.peakSampledGB!=null?`<div data-tip="\u7cfb\u7d71\u8a18\u61b6\u9ad4\u6bcf 5 \u79d2\u53d6\u6a23\u7684\u6700\u9ad8\u503c"><small>\u7cfb\u7d71\u53d6\u6a23</small><b>${fmt(r.peakSampledGB,0)} GB</b></div>`:"")
+      +`<div data-tip="\u6b65\u6578\uff1b\u53bb\u566a\u6b21\u6578 = \u6b65\u6578 \u2212 1"><small>\u6b65\u6578</small><b>${r.steps||"\u2014"}</b></div>`
+      +(r.duration?`<div data-tip="${r.frames||""} \u5e40 \u00b7 24 fps"><small>\u7247\u9577</small><b>${r.duration} s</b></div>`:"")
+      +(r.coldStart!=null?`<div data-tip="\u5bb9\u5668\u555f\u52d5\u5230 /health 200"><small>\u51b7\u555f\u52d5</small><b>${r.coldStartApprox?"\u2248":""}${mmss(r.coldStart)}</b></div>`:"");
+    const blocks=r.promptBlocks||[{label:"\u63d0\u8a5e",en:r.prompt||"",zh:""}];
+    const bi=blocks.map(b=>`<div class="bik">${esc(b.label)}</div><div class="bien">${esc(b.en)}</div><div class="bizh">${esc(b.zh)}</div>`).join("");
+    return `<details class="case" data-k="${r.key}"${i===0?" open":""}>
+      <summary>${head}</summary>
+      <div class="cbody">
+        <div class="v2v-refs${r.refVideo?"":" two"}">${refs}</div>
+        <p class="cfg">${cfg}</p>
+        <div class="kpis">${kpis}</div>
+        <details class="pbox"><summary>\u63d0\u8a5e\u82f1\u4e2d\u5c0d\u7167${blocks.length>1?` \u00b7 ${blocks.length} \u6bb5`:""} \u00b7 ${(r.prompt||"").length} \u5b57\u5143</summary>
+          <div class="pbar"><button class="cp" type="button" data-cp="${r.key}">\u8907\u88fd\u82f1\u6587\u539f\u6587</button>${r.promptNote?`<p class="foot">${r.promptNote}</p>`:""}</div>
+          <div class="bi"><div class="bik hd">\u6bb5\u843d</div><div class="bien hd">\u82f1\u6587\u539f\u6587</div><div class="bizh hd">\u7e41\u9ad4\u4e2d\u6587</div>${bi}</div>
+        </details>
+        <details><summary>\u5099\u8a3b\u8207\u8f09\u5165\u7d00\u9304</summary><ul class="b">${(r.notes||[]).map(n=>`<li>${n}</li>`).join("")}<li><b>\u53c3\u6578</b>\uff1a<code class="mono" style="font-size:11px;word-break:break-all">${r.extra_args||""}</code></li><li><b>\u8f09\u5165</b>\uff1a${r.loaded||""}</li></ul></details>
+      </div>
+    </details>`;}).join("");
+  function copyFallback(txt,done){const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(err){}finally{ta.remove();}}
+  document.querySelectorAll("#cases .cp").forEach(btn=>btn.addEventListener("click",ev=>{
+    ev.preventDefault();ev.stopPropagation();
+    const r=V2V.find(x=>x.key===btn.dataset.cp);if(!r)return;
+    const txt=(r.promptBlocks||[]).map(b=>`${b.k}:\n${b.en}`).join("\n\n")||r.prompt||"";
+    const done=()=>{btn.textContent="\u5df2\u8907\u88fd";btn.classList.add("ok");setTimeout(()=>{btn.textContent="\u8907\u88fd\u82f1\u6587\u539f\u6587";btn.classList.remove("ok");},1400);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>copyFallback(txt,done));}
+    else copyFallback(txt,done);
+  }));
   const base=RUNS.find(r=>r.key==="ref_bf16_hte");
   const LIST=(base?[{...base,name:"5 秒 8 步",sub:"基準"}]:[]).concat(V2V);
   bars("#case-step","#case-step-axis",x=>x.perStep,x=>`${fmt(x.perStep,0)} s`,"s",x=>`<b>${x.name}</b><br>去噪 ${x.evals} 次共 <b>${fmt(stage(x,"denoise")?.secs,0)} s</b>`,null,LIST);
@@ -1407,7 +1477,7 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
 (function () {
   var $ = function (i) { return document.getElementById(i) };
   if (!$('apiTask')) return;
-  var API = 'http://<spark-2-ip>:30100';
+  var API = 'http://{spark-2-ip}:30100';
   /* prompt 由使用者自己寫；產提詞用 SkillHub 上的 SKILL */
   var PROMPT = '<你的產影片提詞>';
   var SKILL = 'https://ai-gw-02.i17game.net/rockmanx4/frontend/skillhub/file/DXnRM3AndlkRAUs6EyoqUg';
@@ -1987,6 +2057,28 @@ try{const t=localStorage.getItem("h3tab"); if(t){const b=document.querySelector(
         '<small>權重檔</small><code>'+r.file+'</code></div>'+
       '</div>';
     }).join('');
+  })();
+
+  /* ---------- 1b. 完整版範例 ---------- */
+  (function(){
+    var box=$('nowFull'); if(!box) return;
+    var r=byKey['horror_trailer_50s_15s']; if(!r||r.status!=='completed') return;
+    function hms(x){var h=Math.floor(x/3600),m=Math.round(x%3600/60);return h?h+' \u5c0f\u6642 '+m+' \u5206':Math.round(x/60)+' \u5206';}
+    box.hidden=false;
+    box.innerHTML='<video src="'+r.video+'" poster="'+r.poster+'" controls preload="none" playsinline aria-label="'+r.name+' \u6210\u54c1"></video>'+
+      '<div class="side">'+
+        '<h3><i style="background:'+r.color+'"></i>'+r.name+
+          '<span class="tg full">\u5b8c\u6574\u7248 \u00b7 50 \u6b65</span>'+
+          '<span class="tg kind">'+(r.kind||'')+'</span></h3>'+
+        '<p class="lead">\u55ae\u5f35\u4eba\u7269\u53c3\u8003\u5716\uff0c\u5834\u666f\u3001\u602a\u7269\u3001\u904b\u93e1\u3001\u5b57\u5361\u8207\u97f3\u6548\u5168\u90e8\u65b0\u751f\u6210\uff1b\u63d0\u8a5e\u7531\u5b98\u65b9 SKILL \u7522\u751f\uff0c\u542b\u9010\u79d2\u97f3\u6548\u8a2d\u8a08\u3002\u8f38\u51fa\u542b AAC \u7acb\u9ad4\u8072\u97f3\u8ecc\uff0c\u6574\u9ad4 RMS \u221223.3 dB\u3002</p>'+
+        '<div class="fk">'+
+          '<div><small>\u5168\u7a0b</small><b>'+hms(r.total)+'</b></div>'+
+          '<div><small>\u53bb\u566a\u6bcf\u6b65</small><b>'+r.perStep.toFixed(1)+' s</b></div>'+
+          '<div data-tip="API \u56de\u5831\u7684 peak_memory_mb"><small>GPU \u5cf0\u503c</small><b>'+(r.peakMB/1024).toFixed(1)+' GB</b></div>'+
+          '<div><small>\u7247\u9577</small><b>'+r.duration+' s</b></div>'+
+        '</div>'+
+        '<p class="lead">\u8a73\u7d30\u6578\u5b57\u3001\u53c3\u8003\u5716\u8207\u82f1\u4e2d\u5c0d\u7167\u63d0\u8a5e\uff0c\u898b\u300c\u5be6\u6e2c\u6848\u4f8b\u7e3d\u89bd\u300d\u5206\u9801\u3002</p>'+
+      '</div>';
   })();
 
   /* ---------- 2. 生成時間堆疊長條 ---------- */
